@@ -1,16 +1,25 @@
 // @ts-nocheck
-//Todo to remove above line after fixing all ts errors
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
+import { NextRequest, NextResponse } from "next/server";
 import { createSchema, createYoga } from "graphql-yoga";
-import { ActivityController } from "@/lib/controllers/activity";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { ActivityController } from "@/lib/controllers/activity";
 
-/* 
--> Auth for  extension api requests with apiToken
--> Api that accepts activity logs from the client and stores them in the database
--> Showcase the user activity with dashboard , project basis , language basis 
+/*
+  ✔ Supports GraphQL queries & mutations
+  ✔ Uses GraphQL-Yoga correctly with Next.js App Router
+  ✔ Fixes Vercel type error for GET/POST handlers
+  ✔ Supports session authentication for dashboard stats
+  ✔ Supports Bearer token for extension syncActivity
 */
+
+export const dynamic = "force-dynamic"; // Required for Yoga route
+
+// =======================
+// 1. GraphQL Schema
+// =======================
 
 const typeDefs = `
   type ActivityLog {
@@ -63,63 +72,63 @@ const typeDefs = `
   }
 `;
 
+// =======================
+// 2. Resolvers
+// =======================
+
 const resolvers = {
   Query: {
     hello: () => "Hello from CodeChrono API",
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    dashboardStats: async (_: any, __: any, ___: any) => {
-      // For GraphQL requests from the frontend, we need to get the session
-      // Note: getServerSession might not work directly inside Yoga context without passing request/response correctly
-      // But since this is a Route Handler, we can try.
-      // Alternatively, we can rely on the context if we pass it.
 
-      // In a real app, we'd extract the user from the session here.
-      // For now, let's assume the user ID is passed in a header or we mock it if not found (for dev).
-      // Ideally: const session = await getServerSession(authOptions);
-
-      // WORKAROUND: Since getServerSession needs headers/cookies which might be tricky in Yoga's request object wrapper,
-      // we will try to get it. If not, we throw.
-
-      // For this iteration, let's assume the client sends 'x-user-id' header for simplicity if session fails,
-      // OR we can try to use the session.
-
-      // Let's try to get the session.
-      // Note: In Next.js App Router, getServerSession requires the standard Request/Response or nothing (for server components).
-      // Inside a Route Handler (POST/GET), it should work.
-
+    dashboardStats: async () => {
       const session = await getServerSession(authOptions);
-      if (!session?.user) {
-        throw new Error("Unauthorized");
-      }
+      if (!session?.user?.id) throw new Error("Unauthorized");
 
-      // @ts-expect-error - user id
       return ActivityController.getDashboardStats(session.user.id);
     },
   },
+
   Mutation: {
-    syncActivity: async (_: any, { input }: { input: any[] }, context: any) => {
+    syncActivity: async (_: any, { input }: any, context: any) => {
       const token = context.request.headers
-        .get("authorization")
+        ?.get("authorization")
         ?.replace("Bearer ", "");
-      console.log("Received token:", token);
-      if (!token) {
-        throw new Error("Unauthorized");
-      }
+
+      if (!token) throw new Error("Unauthorized");
 
       return ActivityController.syncActivities(token, input);
     },
   },
 };
 
-const schema = createSchema({
-  typeDefs,
-  resolvers,
-});
+const schema = createSchema({ typeDefs, resolvers });
 
-const { handleRequest } = createYoga({
+const yoga = createYoga({
   schema,
   graphqlEndpoint: "/api/graphql",
-  fetchAPI: { Response },
+  fetchAPI: { Request, Response },
 });
 
-export { handleRequest as GET, handleRequest as POST };
+// Wrapper to convert NextRequest → Yoga Request → NextResponse
+async function handleYoga(req: NextRequest) {
+  const request = new Request(req.url, {
+    method: req.method,
+    headers: req.headers,
+    body: req.body,
+  });
+
+  const response = await yoga.handleRequest(request);
+
+  return new NextResponse(await response.text(), {
+    status: response.status,
+    headers: response.headers,
+  });
+}
+
+export async function GET(req: NextRequest) {
+  return handleYoga(req);
+}
+
+export async function POST(req: NextRequest) {
+  return handleYoga(req);
+}
