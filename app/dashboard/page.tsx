@@ -46,7 +46,7 @@ export default async function Dashboard() {
   // Calculate mock stats for demo
   const totalProjects = stats.projects.length;
   const activeProjects = stats.projects.filter(
-    (p) => p.totalDuration > 0
+    (p: { totalDuration: number }) => p.totalDuration > 0
   ).length;
   const topLanguage = stats.languages[0]?.language || "N/A";
 
