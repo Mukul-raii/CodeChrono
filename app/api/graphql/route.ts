@@ -99,7 +99,7 @@ const resolvers = {
       const token = context.request.headers
         .get("authorization")
         ?.replace("Bearer ", "");
-
+      console.log("Received token:", token);
       if (!token) {
         throw new Error("Unauthorized");
       }

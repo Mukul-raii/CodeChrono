@@ -61,6 +61,7 @@ model Project {
   userId     String
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   activities ActivityLog[]
+  commits    GitCommit[]
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -73,7 +74,33 @@ model ActivityLog {
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   filePath  String
   language  String
+  editor    String? // Editor used (vscode, vim, etc.)
   timestamp BigInt // Unix timestamp from extension
   duration  Int // in milliseconds
+  commitId  String? // Associated git commit hash
   createdAt DateTime @default(now())
+
+  @@index([projectId, timestamp])
+  @@index([commitId])
+}
+
+model GitCommit {
+  id            String   @id @default(cuid())
+  projectId     String
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  commitHash    String // Git commit SHA
+  message       String   @db.Text
+  author        String
+  authorEmail   String
+  timestamp     BigInt // Unix timestamp of commit
+  totalDuration Int      @default(0) // Total time spent on this commit in milliseconds
+  filesChanged  Int      @default(0) // Number of files changed
+  linesAdded    Int      @default(0) // Lines added
+  linesDeleted  Int      @default(0) // Lines deleted
+  branch        String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([projectId, commitHash])
+  @@index([projectId, timestamp])
 }
