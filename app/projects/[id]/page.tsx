@@ -122,12 +122,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         {/* Header */}
         <div className="mb-8">
           <Link
-            href="/dashboard"
+            href="/projects"
             className="inline-flex items-center gap-2 mb-4 hover:underline"
             style={{ color: "var(--text-secondary)" }}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Dashboard
+            Back to Projects
           </Link>
           <h1
             className="text-3xl font-bold mb-2"
