@@ -6,6 +6,7 @@ import { createSchema, createYoga } from "graphql-yoga";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { ActivityController } from "@/lib/controllers/activity";
+import { GraphQLScalarType } from "graphql";
 
 /*
   ✔ Supports GraphQL queries & mutations
