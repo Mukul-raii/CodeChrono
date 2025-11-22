@@ -468,7 +468,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             className="text-lg font-semibold mb-6"
             style={{ color: "var(--text-primary)" }}
           >
-            Recent Git Commits
+            Recent Git Commits (Time Tracked)
           </h2>
           <div className="space-y-3">
             {project.commits.length === 0 ? (
@@ -476,12 +476,11 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 className="text-center py-8"
                 style={{ color: "var(--text-muted)" }}
               >
-                No commits tracked yet
+                No commits tracked yet. Make commits while the extension is
+                running to track time!
               </p>
             ) : (
               project.commits.map((commit) => {
-                const timeSpent = commitDurations.get(commit.commitHash) || 0;
-
                 return (
                   <div
                     key={commit.id}
@@ -531,10 +530,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                       </div>
                       <div className="text-right">
                         <p
-                          className="text-sm font-medium mb-1"
+                          className="text-lg font-bold mb-1"
                           style={{ color: "var(--primary)" }}
                         >
-                          {formatDuration(timeSpent)}
+                          {formatDuration(commit.totalDuration)}
                         </p>
                         <p
                           className="text-xs"

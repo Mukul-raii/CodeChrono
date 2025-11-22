@@ -70,6 +70,35 @@ export interface SyncActivityInput {
   commitHash?: string;
 }
 
+export interface GitCommit {
+  id: string;
+  commitHash: string;
+  message: string;
+  author: string;
+  authorEmail: string;
+  timestamp: number;
+  totalDuration: number;
+  filesChanged: number;
+  linesAdded: number;
+  linesDeleted: number;
+  branch?: string;
+  activityCount: number;
+  createdAt: string;
+}
+
+export interface SyncCommitInput {
+  projectPath: string;
+  commitHash: string;
+  message: string;
+  author: string;
+  authorEmail: string;
+  timestamp: number;
+  filesChanged: number;
+  linesAdded: number;
+  linesDeleted: number;
+  branch?: string;
+}
+
 export interface SyncResponse {
   success: boolean;
   syncedCount: number;

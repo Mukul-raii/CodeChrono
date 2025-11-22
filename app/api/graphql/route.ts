@@ -1,4 +1,3 @@
-// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -6,7 +5,7 @@ import { createSchema, createYoga } from "graphql-yoga";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { ActivityController } from "@/lib/controllers/activity";
-import { GraphQLScalarType } from "graphql";
+import { GraphQLScalarType, Kind } from "graphql";
 
 /*
   ✔ Supports GraphQL queries & mutations
@@ -47,10 +46,39 @@ const typeDefs = `
     commitHash: String
   }
 
+  input CommitInput {
+    projectPath: String!
+    commitHash: String!
+    message: String!
+    author: String!
+    authorEmail: String!
+    timestamp: BigInt!
+    filesChanged: Int!
+    linesAdded: Int!
+    linesDeleted: Int!
+    branch: String
+  }
+
   type SyncResponse {
     success: Boolean!
     message: String!
     syncedCount: Int!
+  }
+
+  type GitCommit {
+    id: ID!
+    commitHash: String!
+    message: String!
+    author: String!
+    authorEmail: String!
+    timestamp: BigInt!
+    totalDuration: Int!
+    filesChanged: Int!
+    linesAdded: Int!
+    linesDeleted: Int!
+    branch: String
+    activityCount: Int!
+    createdAt: String!
   }
 
   type LanguageStat {
@@ -107,6 +135,7 @@ const typeDefs = `
     topFiles: [FileStat!]!
     dailyActivity: [DailyActivity!]!
     recentActivities: [ActivityLog!]!
+    commits: [GitCommit!]!
   }
 
   type FileStat {
@@ -124,6 +153,7 @@ const typeDefs = `
 
   type Mutation {
     syncActivity(input: [ActivityInput!]!): SyncResponse!
+    syncCommits(input: [CommitInput!]!): SyncResponse!
   }
 `;
 
@@ -137,7 +167,7 @@ const BigIntScalar = new GraphQLScalarType({
   },
   parseValue(value) {
     // Input from client → convert to BigInt
-    return BigInt(value);
+    return BigInt(value as string | number);
   },
   parseLiteral(ast) {
     if (ast.kind === Kind.INT) return BigInt(ast.value);
@@ -156,29 +186,37 @@ const resolvers = {
 
     dashboardStats: async () => {
       const session = await getServerSession(authOptions);
+      // @ts-expect-error - NextAuth session type
       if (!session?.user?.id) throw new Error("Unauthorized");
 
+      // @ts-expect-error - NextAuth session type
       return ActivityController.getDashboardStats(session.user.id);
     },
 
     projects: async () => {
       const session = await getServerSession(authOptions);
+      // @ts-expect-error - NextAuth session type
       if (!session?.user?.id) throw new Error("Unauthorized");
 
+      // @ts-expect-error - NextAuth session type
       return ActivityController.getProjects(session.user.id);
     },
 
     project: async (_: any, { id }: { id: string }) => {
       const session = await getServerSession(authOptions);
+      // @ts-expect-error - NextAuth session type
       if (!session?.user?.id) throw new Error("Unauthorized");
 
+      // @ts-expect-error - NextAuth session type
       return ActivityController.getProject(session.user.id, id);
     },
 
     projectDetails: async (_: any, { id }: { id: string }) => {
       const session = await getServerSession(authOptions);
+      // @ts-expect-error - NextAuth session type
       if (!session?.user?.id) throw new Error("Unauthorized");
 
+      // @ts-expect-error - NextAuth session type
       return ActivityController.getProjectDetails(session.user.id, id);
     },
   },
@@ -192,6 +230,16 @@ const resolvers = {
       if (!token) throw new Error("Unauthorized");
 
       return ActivityController.syncActivities(token, input);
+    },
+
+    syncCommits: async (_: any, { input }: any, context: any) => {
+      const token = context.request.headers
+        ?.get("authorization")
+        ?.replace("Bearer ", "");
+
+      if (!token) throw new Error("Unauthorized");
+
+      return ActivityController.syncCommits(token, input);
     },
   },
 };
@@ -210,10 +258,11 @@ async function handleYoga(req: NextRequest) {
     method: req.method,
     headers: req.headers,
     body: req.body,
+    // @ts-expect-error - duplex is required for streaming
     duplex: "half",
   });
 
-  const response = await yoga.handleRequest(request);
+  const response = await yoga.handleRequest(request, {});
 
   return new NextResponse(await response.text(), {
     status: response.status,

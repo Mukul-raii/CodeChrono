@@ -35,6 +35,7 @@ export class ActivityController {
         });
       }
 
+      // Create activity log with commit reference
       await prisma.activityLog.create({
         data: {
           projectId: project.id,
@@ -43,6 +44,7 @@ export class ActivityController {
           timestamp: log.timestamp,
           duration: log.duration,
           editor: log.editor,
+          commitId: log.commitHash || null,
         },
       });
       syncedCount++;
@@ -53,6 +55,128 @@ export class ActivityController {
       message: `Synced ${syncedCount} activities`,
       syncedCount,
     };
+  }
+
+  static async syncCommits(apiToken: string, commits: any[]) {
+    const user = await prisma.user.findUnique({
+      where: { apiToken },
+    });
+
+    if (!user) {
+      throw new Error("Invalid Token");
+    }
+
+    let syncedCount = 0;
+
+    for (const commit of commits) {
+      // Find or create project
+      let project = await prisma.project.findUnique({
+        where: {
+          userId_path: {
+            userId: user.id,
+            path: commit.projectPath,
+          },
+        },
+      });
+
+      if (!project) {
+        project = await prisma.project.create({
+          data: {
+            name: commit.projectPath.split("/").pop() || "Unknown Project",
+            path: commit.projectPath,
+            userId: user.id,
+          },
+        });
+      }
+
+      // Create or update git commit
+      await prisma.gitCommit.upsert({
+        where: {
+          projectId_commitHash: {
+            projectId: project.id,
+            commitHash: commit.commitHash,
+          },
+        },
+        update: {
+          message: commit.message,
+          author: commit.author,
+          authorEmail: commit.authorEmail,
+          timestamp: commit.timestamp,
+          filesChanged: commit.filesChanged,
+          linesAdded: commit.linesAdded,
+          linesDeleted: commit.linesDeleted,
+          branch: commit.branch,
+        },
+        create: {
+          projectId: project.id,
+          commitHash: commit.commitHash,
+          message: commit.message,
+          author: commit.author,
+          authorEmail: commit.authorEmail,
+          timestamp: commit.timestamp,
+          filesChanged: commit.filesChanged,
+          linesAdded: commit.linesAdded,
+          linesDeleted: commit.linesDeleted,
+          branch: commit.branch,
+        },
+      });
+      syncedCount++;
+    }
+
+    // Recalculate commit durations for affected projects
+    const projectPaths = [...new Set(commits.map((c) => c.projectPath))];
+    for (const projectPath of projectPaths) {
+      const project = await prisma.project.findUnique({
+        where: {
+          userId_path: {
+            userId: user.id,
+            path: projectPath,
+          },
+        },
+      });
+
+      if (project) {
+        await this.calculateCommitDurations(project.id);
+      }
+    }
+
+    return {
+      success: true,
+      message: `Synced ${syncedCount} commits`,
+      syncedCount,
+    };
+  }
+
+  /**
+   * Calculate total duration spent on each commit by summing activities with matching commitId
+   */
+  static async calculateCommitDurations(projectId: string) {
+    const commits = await prisma.gitCommit.findMany({
+      where: { projectId },
+    });
+
+    for (const commit of commits) {
+      // Sum all activity durations for this commit
+      const activities = await prisma.activityLog.findMany({
+        where: {
+          projectId,
+          commitId: commit.commitHash,
+        },
+        select: {
+          duration: true,
+        },
+      });
+
+      const totalDuration = activities.reduce(
+        (sum, activity) => sum + activity.duration,
+        0
+      );
+
+      await prisma.gitCommit.update({
+        where: { id: commit.id },
+        data: { totalDuration },
+      });
+    }
   }
 
   static async getDashboardStats(userId: string) {
@@ -202,6 +326,9 @@ export class ActivityController {
         activities: {
           orderBy: { timestamp: "desc" },
         },
+        commits: {
+          orderBy: { timestamp: "desc" },
+        },
       },
     });
 
@@ -271,6 +398,34 @@ export class ActivityController {
         createdAt: activity.createdAt.toISOString(),
       }));
 
+    // Format commits with activity counts
+    const commits = await Promise.all(
+      project.commits.map(async (commit) => {
+        const activityCount = await prisma.activityLog.count({
+          where: {
+            projectId: project.id,
+            commitId: commit.commitHash,
+          },
+        });
+
+        return {
+          id: commit.id,
+          commitHash: commit.commitHash,
+          message: commit.message,
+          author: commit.author,
+          authorEmail: commit.authorEmail,
+          timestamp: commit.timestamp,
+          totalDuration: commit.totalDuration,
+          filesChanged: commit.filesChanged,
+          linesAdded: commit.linesAdded,
+          linesDeleted: commit.linesDeleted,
+          branch: commit.branch,
+          activityCount,
+          createdAt: commit.createdAt.toISOString(),
+        };
+      })
+    );
+
     return {
       id: project.id,
       name: project.name,
@@ -281,6 +436,7 @@ export class ActivityController {
       topFiles,
       dailyActivity,
       recentActivities,
+      commits: commits.slice(0, 50), // Return last 50 commits
     };
   }
 }

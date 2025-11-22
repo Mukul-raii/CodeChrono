@@ -8,3 +8,4 @@ export * from "./types";
 export { dashboardApi } from "./endpoints/dashboard";
 export { projectsApi } from "./endpoints/projects";
 export { activitiesApi } from "./endpoints/activities";
+export { commitsApi } from "./endpoints/commits";
