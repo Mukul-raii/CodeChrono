@@ -3,7 +3,7 @@
  * Functions for managing activity logs
  */
 
-import { apiClient } from "../client";
+import { graphqlRequest } from "../client";
 import type {
   ActivityLog,
   SyncActivityInput,
@@ -29,14 +29,14 @@ export const activitiesApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query: mutation,
-      variables: {
+    const data = await graphqlRequest<{ syncActivities: SyncResponse }>(
+      mutation,
+      {
         apiToken,
         logs: activities,
-      },
-    });
-    return response.data.data.syncActivities;
+      }
+    );
+    return data.syncActivities;
   },
 
   /**
@@ -60,11 +60,11 @@ export const activitiesApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
+    const data = await graphqlRequest<{ projectActivities: ActivityLog[] }>(
       query,
-      variables: { projectId, ...params },
-    });
-    return response.data.data.projectActivities;
+      { projectId, ...params }
+    );
+    return data.projectActivities;
   },
 
   /**
@@ -85,11 +85,11 @@ export const activitiesApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
+    const data = await graphqlRequest<{ recentActivities: ActivityLog[] }>(
       query,
-      variables: { limit },
-    });
-    return response.data.data.recentActivities;
+      { limit }
+    );
+    return data.recentActivities;
   },
 
   /**
@@ -113,13 +113,12 @@ export const activitiesApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query,
-      variables: {
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-      },
+    const data = await graphqlRequest<{
+      activitiesByDateRange: ActivityLog[];
+    }>(query, {
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
     });
-    return response.data.data.activitiesByDateRange;
+    return data.activitiesByDateRange;
   },
 };

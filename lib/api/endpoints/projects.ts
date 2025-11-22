@@ -3,7 +3,7 @@
  * Functions for managing projects
  */
 
-import { apiClient } from "../client";
+import { graphqlRequest } from "../client";
 import type { Project, PaginationParams } from "../types";
 
 export const projectsApi = {
@@ -23,11 +23,11 @@ export const projectsApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
+    const data = await graphqlRequest<{ projects: Project[] }>(
       query,
-      variables: params,
-    });
-    return response.data.data.projects;
+      params as Record<string, unknown>
+    );
+    return data.projects;
   },
 
   /**
@@ -46,11 +46,8 @@ export const projectsApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query,
-      variables: { id },
-    });
-    return response.data.data.project;
+    const data = await graphqlRequest<{ project: Project }>(query, { id });
+    return data.project;
   },
 
   /**
@@ -90,11 +87,31 @@ export const projectsApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query,
-      variables: { id },
-    });
-    return response.data.data.projectDetails;
+    const data = await graphqlRequest<{
+      projectDetails: {
+        id: string;
+        name: string;
+        path: string;
+        totalDuration: number;
+        activityCount: number;
+        topLanguages: Array<{
+          language: string;
+          duration: number;
+          percentage: number;
+        }>;
+        topFiles: Array<{ filePath: string; duration: number }>;
+        dailyActivity: Array<{ date: string; duration: number }>;
+        recentActivities: Array<{
+          id: string;
+          filePath: string;
+          language: string;
+          duration: number;
+          timestamp: string;
+          editor: string;
+        }>;
+      };
+    }>(query, { id });
+    return data.projectDetails;
   },
 
   /**
@@ -107,11 +124,10 @@ export const projectsApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query: mutation,
-      variables: { id },
+    const data = await graphqlRequest<{ deleteProject: boolean }>(mutation, {
+      id,
     });
-    return response.data.data.deleteProject;
+    return data.deleteProject;
   },
 
   /**
@@ -130,10 +146,10 @@ export const projectsApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", {
-      query: mutation,
-      variables: { id, name },
+    const data = await graphqlRequest<{ updateProject: Project }>(mutation, {
+      id,
+      name,
     });
-    return response.data.data.updateProject;
+    return data.updateProject;
   },
 };

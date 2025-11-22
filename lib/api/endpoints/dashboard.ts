@@ -3,7 +3,7 @@
  * Functions for fetching dashboard statistics and data
  */
 
-import { apiClient } from "../client";
+import { graphqlRequest } from "../client";
 import type { DashboardStats } from "../types";
 
 export const dashboardApi = {
@@ -42,8 +42,10 @@ export const dashboardApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", { query });
-    return response.data.data.dashboardStats;
+    const data = await graphqlRequest<{ dashboardStats: DashboardStats }>(
+      query
+    );
+    return data.dashboardStats;
   },
 
   /**
@@ -62,7 +64,15 @@ export const dashboardApi = {
       }
     `;
 
-    const response = await apiClient.post("/graphql", { query });
-    return response.data.data.me;
+    const data = await graphqlRequest<{
+      me: {
+        id: string;
+        name: string;
+        email: string;
+        image?: string;
+        apiToken?: string;
+      };
+    }>(query);
+    return data.me;
   },
 };

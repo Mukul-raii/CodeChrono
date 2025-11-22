@@ -1,43 +1,63 @@
 /**
  * API Client for CodeChrono
- * Centralized API configuration and base client setup
+ * Centralized GraphQL client configuration
  */
 
-import axios from "axios";
+import { GraphQLClient } from "graphql-request";
 
-// Base API client configuration
-export const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "/api",
+// GraphQL endpoint
+const GRAPHQL_ENDPOINT = process.env.NEXT_PUBLIC_API_URL
+  ? `${process.env.NEXT_PUBLIC_API_URL}/graphql`
+  : "/api/graphql";
+
+// Create GraphQL client with default configuration
+export const graphqlClient = new GraphQLClient(GRAPHQL_ENDPOINT, {
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
+  // Return errors as part of the response instead of throwing
+  errorPolicy: "all",
 });
 
-// Request interceptor for adding auth tokens
-apiClient.interceptors.request.use(
-  (config) => {
-    // You can add auth tokens here if needed
-    // const token = localStorage.getItem('token');
-    // if (token) {
-    //   config.headers.Authorization = `Bearer ${token}`;
-    // }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
+/**
+ * Helper function to set authentication token
+ * Call this when user logs in or token changes
+ */
+export const setAuthToken = (token: string | null) => {
+  if (token) {
+    graphqlClient.setHeader("Authorization", `Bearer ${token}`);
+  } else {
+    graphqlClient.setHeader("Authorization", "");
   }
-);
+};
 
-// Response interceptor for handling errors
-apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // Handle common errors
-    if (error.response?.status === 401) {
-      // Handle unauthorized access
-      console.error("Unauthorized access");
+/**
+ * Helper function to make GraphQL requests with error handling
+ * @param query - GraphQL query or mutation string
+ * @param variables - Variables for the query/mutation
+ * @returns Response data
+ */
+export const graphqlRequest = async <T = unknown>(
+  query: string,
+  variables?: Record<string, unknown>
+): Promise<T> => {
+  try {
+    const data = await graphqlClient.request<T>(query, variables);
+    return data;
+  } catch (error: unknown) {
+    // Handle GraphQL errors
+    if (error && typeof error === "object" && "response" in error) {
+      const gqlError = error as {
+        response?: { errors?: unknown[]; status?: number };
+      };
+      if (gqlError.response?.errors) {
+        console.error("GraphQL Errors:", gqlError.response.errors);
+      }
+      // Handle network errors
+      if (gqlError.response?.status === 401) {
+        console.error("Unauthorized access - please login");
+      }
     }
-    return Promise.reject(error);
+    throw error;
   }
-);
+};
