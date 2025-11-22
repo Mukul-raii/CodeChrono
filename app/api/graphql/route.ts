@@ -23,6 +23,8 @@ export const dynamic = "force-dynamic"; // Required for Yoga route
 // =======================
 
 const typeDefs = `
+  scalar BigInt
+
   type ActivityLog {
     id: ID!
     projectPath: String!
