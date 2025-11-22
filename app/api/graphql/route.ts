@@ -46,6 +46,19 @@ const typeDefs = `
     commitHash: String
   }
 
+  input FileActivityInput {
+    projectPath: String!
+    commitHash: String!
+    branch: String!
+    filePath: String!
+    language: String!
+    totalDuration: Int!
+    activityCount: Int!
+    firstActivityAt: BigInt!
+    lastActivityAt: BigInt!
+    editor: String
+  }
+
   input CommitInput {
     projectPath: String!
     commitHash: String!
@@ -153,6 +166,7 @@ const typeDefs = `
 
   type Mutation {
     syncActivity(input: [ActivityInput!]!): SyncResponse!
+    syncFileActivities(input: [FileActivityInput!]!): SyncResponse!
     syncCommits(input: [CommitInput!]!): SyncResponse!
   }
 `;
@@ -230,6 +244,16 @@ const resolvers = {
       if (!token) throw new Error("Unauthorized");
 
       return ActivityController.syncActivities(token, input);
+    },
+
+    syncFileActivities: async (_: any, { input }: any, context: any) => {
+      const token = context.request.headers
+        ?.get("authorization")
+        ?.replace("Bearer ", "");
+
+      if (!token) throw new Error("Unauthorized");
+
+      return ActivityController.syncFileActivities(token, input);
     },
 
     syncCommits: async (_: any, { input }: any, context: any) => {

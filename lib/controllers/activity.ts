@@ -147,6 +147,82 @@ export class ActivityController {
     };
   }
 
+  static async syncFileActivities(apiToken: string, fileActivities: any[]) {
+    const user = await prisma.user.findUnique({
+      where: { apiToken },
+    });
+
+    if (!user) {
+      throw new Error("Invalid Token");
+    }
+
+    let syncedCount = 0;
+
+    // Process aggregated file activities
+    for (const fileActivity of fileActivities) {
+      // Find or create project
+      let project = await prisma.project.findUnique({
+        where: {
+          userId_path: {
+            userId: user.id,
+            path: fileActivity.projectPath,
+          },
+        },
+      });
+
+      if (!project) {
+        project = await prisma.project.create({
+          data: {
+            name:
+              fileActivity.projectPath.split("/").pop() || "Unknown Project",
+            path: fileActivity.projectPath,
+            userId: user.id,
+          },
+        });
+      }
+
+      // Create aggregated activity log entry
+      // This represents the summary of all activities for this file in this commit
+      await prisma.activityLog.create({
+        data: {
+          projectId: project.id,
+          filePath: fileActivity.filePath,
+          language: fileActivity.language,
+          timestamp: fileActivity.firstActivityAt,
+          duration: fileActivity.totalDuration,
+          editor: fileActivity.editor,
+          commitId: fileActivity.commitHash,
+        },
+      });
+      syncedCount++;
+
+      // Update the commit's total duration by adding this file's duration
+      const commit = await prisma.gitCommit.findUnique({
+        where: {
+          projectId_commitHash: {
+            projectId: project.id,
+            commitHash: fileActivity.commitHash,
+          },
+        },
+      });
+
+      if (commit) {
+        await prisma.gitCommit.update({
+          where: { id: commit.id },
+          data: {
+            totalDuration: commit.totalDuration + fileActivity.totalDuration,
+          },
+        });
+      }
+    }
+
+    return {
+      success: true,
+      message: `Synced ${syncedCount} file activities`,
+      syncedCount,
+    };
+  }
+
   /**
    * Calculate total duration spent on each commit by summing activities with matching commitId
    */
