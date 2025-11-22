@@ -72,11 +72,30 @@ const typeDefs = `
   }
 `;
 
+const BigIntScalar = new GraphQLScalarType({
+  name: "BigInt",
+  description:
+    "Custom BigInt scalar for Unix timestamps (millisecond precision)",
+  serialize(value) {
+    // Prisma BigInt → convert to JS number for JSON
+    return Number(value);
+  },
+  parseValue(value) {
+    // Input from client → convert to BigInt
+    return BigInt(value);
+  },
+  parseLiteral(ast) {
+    if (ast.kind === Kind.INT) return BigInt(ast.value);
+    return null;
+  },
+});
+
 // =======================
 // 2. Resolvers
 // =======================
 
 const resolvers = {
+  BigInt: BigIntScalar,
   Query: {
     hello: () => "Hello from CodeChrono API",
 
@@ -115,6 +134,7 @@ async function handleYoga(req: NextRequest) {
     method: req.method,
     headers: req.headers,
     body: req.body,
+    duplex: "half",
   });
 
   const response = await yoga.handleRequest(request);
