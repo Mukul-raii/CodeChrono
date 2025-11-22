@@ -27,7 +27,7 @@ const typeDefs = `
     projectPath: String!
     filePath: String!
     language: String!
-    timestamp: Float!
+    timestamp: BigInt!
     duration: Int!
   }
 
@@ -35,7 +35,7 @@ const typeDefs = `
     projectPath: String!
     filePath: String!
     language: String!
-    timestamp: Float!
+    timestamp: BigInt!
     duration: Int!
   }
 
