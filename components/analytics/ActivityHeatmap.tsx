@@ -65,7 +65,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
   const getIntensityStyle = (duration: number, isFuture: boolean) => {
     if (isFuture) {
       return {
-        backgroundColor: "hsl(var(--muted))",
+        backgroundColor: "var(--muted)",
         opacity: 0.2,
         cursor: "default",
       };
@@ -73,13 +73,13 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
 
     if (duration === 0) {
       return {
-        backgroundColor: "hsl(var(--muted))",
+        backgroundColor: "var(--muted)",
         opacity: 0.4,
       };
     }
 
     const intensity = Math.min(duration / maxDuration, 1);
-    const baseColor = "hsl(var(--chart-1))";
+    const baseColor = "var(--chart-1)";
 
     // Use opacity for intensity
     if (intensity < 0.2) return { backgroundColor: baseColor, opacity: 0.3 };
@@ -145,29 +145,29 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
           <div className="flex gap-1">
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--muted))", opacity: 0.4 }}
+              style={{ backgroundColor: "var(--muted)", opacity: 0.4 }}
               title="No activity"
             />
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.3 }}
+              style={{ backgroundColor: "var(--chart-1)", opacity: 0.3 }}
               title="Light activity"
             />
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.5 }}
+              style={{ backgroundColor: "var(--chart-1)", opacity: 0.5 }}
             />
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.7 }}
+              style={{ backgroundColor: "var(--chart-1)", opacity: 0.7 }}
             />
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.85 }}
+              style={{ backgroundColor: "var(--chart-1)", opacity: 0.85 }}
             />
             <div
               className="h-3 w-3 rounded-[3px] border border-border/50"
-              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 1 }}
+              style={{ backgroundColor: "var(--chart-1)", opacity: 1 }}
               title="Heavy activity"
             />
           </div>

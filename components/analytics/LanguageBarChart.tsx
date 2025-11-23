@@ -27,7 +27,7 @@ interface LanguageBarChartProps {
 const chartConfig = {
   duration: {
     label: "Coding Time",
-    color: "hsl(var(--chart-2))",
+    color: "var(--chart-2)",
   },
 } satisfies ChartConfig;
 
@@ -85,7 +85,7 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
               tickFormatter={(value) => `${value.toFixed(1)}h`}
             />
             <ChartTooltip
-              cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
+              cursor={{ fill: "var(--muted)", opacity: 0.3 }}
               content={
                 <ChartTooltipContent
                   hideLabel
@@ -105,7 +105,7 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
             />
             <Bar
               dataKey="duration"
-              fill="hsl(var(--chart-2))"
+              fill="var(--chart-2)"
               radius={[8, 8, 0, 0]}
             />
           </BarChart>

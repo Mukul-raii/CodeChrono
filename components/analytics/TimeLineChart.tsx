@@ -25,7 +25,7 @@ interface TimeLineChartProps {
 const chartConfig = {
   duration: {
     label: "Coding Time",
-    color: "hsl(var(--chart-1))",
+    color: "var(--chart-1)",
   },
 } satisfies ChartConfig;
 
@@ -112,7 +112,7 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
               tickFormatter={(value) => `${value.toFixed(1)}h`}
             />
             <ChartTooltip
-              cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
+              cursor={{ fill: "var(--muted)", opacity: 0.3 }}
               content={
                 <ChartTooltipContent
                   labelFormatter={(label) => `Date: ${label}`}
@@ -124,7 +124,7 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
             />
             <Bar
               dataKey="duration"
-              fill="hsl(var(--chart-1))"
+              fill="var(--chart-1)"
               radius={[8, 8, 0, 0]}
             />
           </BarChart>

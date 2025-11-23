@@ -202,7 +202,7 @@ export function DashboardContent() {
                   </div>
                   {/* Bar */}
                   <div
-                    className="w-full max-w-[60px] bg-primary/80 hover:bg-primary rounded-t-md transition-all duration-500 ease-out"
+                    className="w-full max-w-[60px] bg-primary hover:opacity-80 rounded-t-md transition-all duration-500 ease-out"
                     style={{
                       height: `${heightPercentage}%`,
                     }}
