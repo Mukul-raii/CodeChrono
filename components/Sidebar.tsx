@@ -21,6 +21,7 @@ import {
   Settings,
   LayoutDashboardIcon,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -42,6 +43,11 @@ const items = [
     title: "Analytics",
     url: "/analytics",
     icon: Calendar,
+  },
+  {
+    title: "Showcase",
+    url: "/showcase",
+    icon: Sparkles,
   },
   {
     title: "Settings",

@@ -40,10 +40,10 @@ export function DashboardContent() {
   // Prepare chart data
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
-    d.setDate(d.getDate() - i);
+    d.setDate(d.getDate() - (6 - i)); // Start from 6 days ago to today
     d.setHours(0, 0, 0, 0);
     return d;
-  }).reverse();
+  });
 
   const chartData = last7Days.map((date) => {
     const activity = stats?.dailyActivity?.find((a) => {
@@ -260,10 +260,13 @@ export function DashboardContent() {
                       {lang.percentage.toFixed(1)}%)
                     </span>
                   </div>
-                  <div className="w-full rounded-full h-2 bg-muted">
+                  <div className="w-full rounded-full h-2 bg-muted overflow-hidden">
                     <div
-                      className="h-2 rounded-full bg-primary"
-                      style={{ width: `${lang.percentage}%` }}
+                      className="h-2 rounded-full bg-primary transition-all duration-500"
+                      style={{
+                        width: `${Math.max(lang.percentage, 0.5)}%`,
+                        minWidth: lang.percentage > 0 ? "2px" : "0",
+                      }}
                     />
                   </div>
                 </div>

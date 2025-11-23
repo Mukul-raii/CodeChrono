@@ -365,32 +365,47 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             }}
           >
             <h2
-              className="text-lg font-semibold mb-6"
+              className="text-lg font-semibold mb-4"
               style={{ color: "var(--text-primary)" }}
             >
               Editor Usage
             </h2>
-            <div className="space-y-3">
-              {editors.map((editor) => (
-                <div
-                  key={editor.editor}
-                  className="flex items-center justify-between p-3 rounded-lg"
-                  style={{ background: "var(--background)" }}
-                >
-                  <span
-                    className="font-medium"
-                    style={{ color: "var(--text-primary)" }}
-                  >
-                    {editor.editor}
-                  </span>
-                  <span
-                    className="text-sm"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    {formatDuration(editor.duration)}
-                  </span>
-                </div>
-              ))}
+            <div className="space-y-2">
+              {editors.map((editor) => {
+                const editorPercentage =
+                  totalDuration > 0
+                    ? (editor.duration / totalDuration) * 100
+                    : 0;
+
+                return (
+                  <div key={editor.editor} className="space-y-1">
+                    <div className="flex items-center justify-between text-sm">
+                      <span
+                        className="font-medium"
+                        style={{ color: "var(--text-primary)" }}
+                      >
+                        {editor.editor}
+                      </span>
+                      <span style={{ color: "var(--text-muted)" }}>
+                        {formatDuration(editor.duration)} (
+                        {editorPercentage.toFixed(1)}%)
+                      </span>
+                    </div>
+                    <div
+                      className="h-1.5 rounded-full overflow-hidden"
+                      style={{ background: "var(--background)" }}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${editorPercentage}%`,
+                          background: "var(--primary)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
