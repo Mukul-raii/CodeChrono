@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { formatDuration } from "@/lib/utils/index";
 
 interface LanguageBarChartProps {
   languages: Array<{
@@ -51,8 +52,8 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
 
   const chartData = languages.slice(0, 8).map((lang) => ({
     language: lang.language,
-    duration: lang.duration / 3600000, // Convert milliseconds to hours
-    hours: (lang.duration / 3600000).toFixed(2),
+    duration: lang.duration / 3600000, // Convert milliseconds to hours for Y-axis
+    durationText: formatDuration(lang.duration), // Use formatDuration for tooltip
     percentage: lang.percentage.toFixed(1),
   }));
 
@@ -93,7 +94,7 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
                       <span className="font-medium">
                         {props.payload.language}
                       </span>
-                      <span>{props.payload.hours} hours</span>
+                      <span>{props.payload.durationText}</span>
                       <span className="text-muted-foreground">
                         {props.payload.percentage}% of total
                       </span>

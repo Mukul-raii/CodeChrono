@@ -14,7 +14,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { formatDuration } from "@/lib/utils/index";
 
 interface TimeLineChartProps {
   data: Array<{ date: string; duration: number }>;
@@ -54,8 +55,8 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
         month: "short",
         day: "numeric",
       }),
-      duration: item.duration / 3600000, // Convert milliseconds to hours
-      hours: (item.duration / 3600000).toFixed(2),
+      duration: item.duration / 3600000, // Convert milliseconds to hours for Y-axis
+      durationText: formatDuration(item.duration), // Use formatDuration for tooltip
     }));
 
   const totalTime = filteredData.reduce((acc, item) => acc + item.duration, 0);
@@ -92,7 +93,7 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig}>
-          <AreaChart
+          <BarChart
             data={filteredData}
             margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
           >
@@ -111,31 +112,25 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
               tickFormatter={(value) => `${value.toFixed(1)}h`}
             />
             <ChartTooltip
-              cursor={{
-                stroke: "hsl(var(--muted-foreground))",
-                strokeWidth: 1,
-              }}
+              cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
               content={
                 <ChartTooltipContent
                   labelFormatter={(label) => `Date: ${label}`}
                   formatter={(value, name, props) => (
-                    <span>{props.payload.hours} hours</span>
+                    <span>{props.payload.durationText}</span>
                   )}
                 />
               }
             />
-            <Area
+            <Bar
               dataKey="duration"
-              type="monotone"
               fill="hsl(var(--chart-1))"
-              fillOpacity={0.3}
-              stroke="hsl(var(--chart-1))"
-              strokeWidth={2}
+              radius={[8, 8, 0, 0]}
             />
-          </AreaChart>
+          </BarChart>
         </ChartContainer>
         <div className="mt-4 text-center text-sm text-muted-foreground">
-          Total: {totalTime.toFixed(2)} hours
+          Total: {formatDuration(totalTime * 3600000)}
         </div>
       </CardContent>
     </Card>

@@ -14,6 +14,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Pie, PieChart, Cell, Legend } from "recharts";
+import { formatDuration } from "@/lib/utils/index";
 
 interface ProjectPieChartProps {
   projects: Array<{
@@ -55,7 +56,7 @@ export function ProjectPieChart({ projects }: ProjectPieChartProps) {
   const chartData = projects.slice(0, 5).map((project, index) => ({
     name: project.name,
     value: project.totalDuration, // Keep in milliseconds for accuracy
-    hours: (project.totalDuration / 3600000).toFixed(2), // Convert to hours for display
+    duration: formatDuration(project.totalDuration), // Use formatDuration for consistency
     percentage: ((project.totalDuration / totalTime) * 100).toFixed(1),
     fill: COLORS[index % COLORS.length],
   }));
@@ -86,7 +87,7 @@ export function ProjectPieChart({ projects }: ProjectPieChartProps) {
                   formatter={(value, name, props) => (
                     <div className="flex flex-col gap-1">
                       <span className="font-medium">{props.payload.name}</span>
-                      <span>{props.payload.hours} hours</span>
+                      <span>{props.payload.duration}</span>
                       <span className="text-muted-foreground">
                         {props.payload.percentage}% of total
                       </span>
