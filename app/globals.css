@@ -65,11 +65,11 @@
   --input: oklch(95% 0.038 75.164); /* Light beige input */
   --ring: oklch(46.44% 0.111 37.85); /* Brown focus ring */
   /* Chart colors - warm caramel palette with proper visibility */
-  --chart-1: oklch(0.837 0.128 66.29); /* Light caramel */
-  --chart-2: oklch(0.705 0.213 47.604); /* Medium caramel */
-  --chart-3: oklch(0.646 0.222 41.116); /* Rich caramel */
-  --chart-4: oklch(0.553 0.195 38.402); /* Dark caramel */
-  --chart-5: oklch(0.47 0.157 37.304); /* Deep chocolate brown */
+  --chart-1: oklch(83.7% 0.128 66.29); /* Light caramel */
+  --chart-2: oklch(70.5% 0.213 47.604); /* Medium caramel */
+  --chart-3: oklch(64.6% 0.222 41.116); /* Rich caramel */
+  --chart-4: oklch(55.3% 0.195 38.402); /* Dark caramel */
+  --chart-5: oklch(47% 0.157 37.304); /* Deep chocolate brown */
   /* Sidebar colors */
   --sidebar: oklch(98% 0.016 73.684); /* Light cream sidebar */
   --sidebar-foreground: oklch(40% 0.123 38.172); /* Dark brown sidebar text */
