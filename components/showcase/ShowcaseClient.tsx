@@ -69,21 +69,16 @@ export default function ShowcaseClient({
   const projectFromUrl = searchParams.get("project");
   const themeFromUrl = searchParams.get("theme");
 
-  const [selectedProject, setSelectedProject] = useState<string>("");
-  const [selectedTheme, setSelectedTheme] = useState<string>("retro");
-  const [projectData, setProjectData] = useState<ProjectData | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // Initialize state with URL params if valid
+  const initialProject = projectFromUrl && projects.some((p) => p.id === projectFromUrl) 
+    ? projectFromUrl 
+    : "";
+  const initialTheme = themeFromUrl && THEMES.some((t) => t.id === themeFromUrl)
+    ? themeFromUrl
+    : "retro";
 
-  // Initialize from URL params
-  useEffect(() => {
-    if (projectFromUrl && projects.some((p) => p.id === projectFromUrl)) {
-      setSelectedProject(projectFromUrl);
-    }
-    if (themeFromUrl && THEMES.some((t) => t.id === themeFromUrl)) {
-      setSelectedTheme(themeFromUrl);
-    }
-  }, [projectFromUrl, themeFromUrl, projects]);
+  const [selectedProject, setSelectedProject] = useState<string>(initialProject);
+  const [selectedTheme, setSelectedTheme] = useState<string>(initialTheme);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
