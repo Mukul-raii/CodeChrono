@@ -17,7 +17,7 @@ export function Hero() {
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-8 leading-tight">
               Track Your Coding Time. <br />
               <span className="text-primary relative inline-block">
-                Automatically.
+                with No Limts.
                 <svg
                   className="absolute w-full h-3 -bottom-1 left-0 text-accent/30"
                   viewBox="0 0 100 10"

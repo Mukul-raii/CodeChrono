@@ -70,14 +70,17 @@ export default function ShowcaseClient({
   const themeFromUrl = searchParams.get("theme");
 
   // Initialize state with URL params if valid
-  const initialProject = projectFromUrl && projects.some((p) => p.id === projectFromUrl) 
-    ? projectFromUrl 
-    : "";
-  const initialTheme = themeFromUrl && THEMES.some((t) => t.id === themeFromUrl)
-    ? themeFromUrl
-    : "retro";
+  const initialProject =
+    projectFromUrl && projects.some((p) => p.id === projectFromUrl)
+      ? projectFromUrl
+      : "";
+  const initialTheme =
+    themeFromUrl && THEMES.some((t) => t.id === themeFromUrl)
+      ? themeFromUrl
+      : "retro";
 
-  const [selectedProject, setSelectedProject] = useState<string>(initialProject);
+  const [selectedProject, setSelectedProject] =
+    useState<string>(initialProject);
   const [selectedTheme, setSelectedTheme] = useState<string>(initialTheme);
   const [projectData, setProjectData] = useState<ProjectData | null>(null);
   const [copied, setCopied] = useState(false);
@@ -193,8 +196,8 @@ export default function ShowcaseClient({
           <>
             <div>
               <h2 className="text-xl font-bold mb-4">Preview</h2>
-              <div className="bg-muted/30 p-8 rounded-lg border">
-                <div className="max-w-md mx-auto">
+              <div className="bg-muted/30 p-8 rounded-lg border min-h-[400px] flex items-center justify-center">
+                <div className="max-w-md mx-auto w-full">
                   <ProjectCard data={projectData} theme={selectedTheme} />
                 </div>
               </div>
