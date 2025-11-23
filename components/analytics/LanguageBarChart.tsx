@@ -31,9 +31,28 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function LanguageBarChart({ languages }: LanguageBarChartProps) {
+  if (languages.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Time by Language</CardTitle>
+          <CardDescription>
+            Breakdown of coding time by programming language
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64 text-muted-foreground">
+            No language data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const chartData = languages.slice(0, 8).map((lang) => ({
     language: lang.language,
     duration: lang.duration / 3600, // Convert to hours
+    hours: (lang.duration / 3600).toFixed(2),
     percentage: lang.percentage.toFixed(1),
   }));
 
@@ -65,17 +84,18 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
               tickFormatter={(value) => `${value.toFixed(1)}h`}
             />
             <ChartTooltip
-              cursor={false}
+              cursor={{ fill: "hsl(var(--muted))", opacity: 0.3 }}
               content={
                 <ChartTooltipContent
+                  hideLabel
                   formatter={(value, name, props) => (
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-1">
                       <span className="font-medium">
                         {props.payload.language}
                       </span>
-                      <span>{(value as number).toFixed(2)} hours</span>
+                      <span>{props.payload.hours} hours</span>
                       <span className="text-muted-foreground">
-                        {props.payload.percentage}%
+                        {props.payload.percentage}% of total
                       </span>
                     </div>
                   )}
@@ -84,7 +104,7 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
             />
             <Bar
               dataKey="duration"
-              fill="var(--color-duration)"
+              fill="hsl(var(--chart-2))"
               radius={[8, 8, 0, 0]}
             />
           </BarChart>

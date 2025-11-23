@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+import SidebarWrapper from "@/components/Sidebar";
 
 export default async function AnalyticsLayout({
   children,
@@ -12,6 +13,12 @@ export default async function AnalyticsLayout({
   if (!session) {
     redirect("/api/auth/signin");
   }
-
-  return <>{children}</>;
+  return (
+    <SidebarWrapper
+      userName={session.user?.name || undefined}
+      userEmail={session.user?.email || undefined}
+    >
+      {children}
+    </SidebarWrapper>
+  );
 }

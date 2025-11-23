@@ -45,13 +45,22 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
     gridData.push(weekData);
   }
 
-  const getIntensityColor = (duration: number) => {
-    if (duration === 0) return "bg-muted";
+  const getIntensityStyle = (duration: number) => {
+    if (duration === 0) {
+      return {
+        backgroundColor: "hsl(var(--muted))",
+        opacity: 0.5,
+      };
+    }
     const intensity = Math.min(duration / maxDuration, 1);
-    if (intensity < 0.25) return "bg-green-200 dark:bg-green-900";
-    if (intensity < 0.5) return "bg-green-400 dark:bg-green-700";
-    if (intensity < 0.75) return "bg-green-600 dark:bg-green-500";
-    return "bg-green-800 dark:bg-green-300";
+    const baseColor = "hsl(var(--chart-1))";
+
+    // Use opacity for intensity
+    if (intensity < 0.2) return { backgroundColor: baseColor, opacity: 0.2 };
+    if (intensity < 0.4) return { backgroundColor: baseColor, opacity: 0.4 };
+    if (intensity < 0.6) return { backgroundColor: baseColor, opacity: 0.6 };
+    if (intensity < 0.8) return { backgroundColor: baseColor, opacity: 0.8 };
+    return { backgroundColor: baseColor, opacity: 1 };
   };
 
   const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -82,9 +91,8 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
                 {week.map((day, dayIndex) => (
                   <div
                     key={dayIndex}
-                    className={`h-3 w-3 rounded-sm ${getIntensityColor(
-                      day.duration
-                    )}`}
+                    className="h-3 w-3 rounded-sm border border-border/50 transition-all hover:scale-110 cursor-pointer"
+                    style={getIntensityStyle(day.duration)}
                     title={`${day.date.toLocaleDateString()}: ${(
                       day.duration / 3600
                     ).toFixed(2)} hours`}
@@ -99,11 +107,30 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
         <div className="flex items-center gap-2 mt-4 text-xs text-muted-foreground">
           <span>Less</span>
           <div className="flex gap-1">
-            <div className="h-3 w-3 rounded-sm bg-muted" />
-            <div className="h-3 w-3 rounded-sm bg-green-200 dark:bg-green-900" />
-            <div className="h-3 w-3 rounded-sm bg-green-400 dark:bg-green-700" />
-            <div className="h-3 w-3 rounded-sm bg-green-600 dark:bg-green-500" />
-            <div className="h-3 w-3 rounded-sm bg-green-800 dark:bg-green-300" />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--muted))", opacity: 0.5 }}
+            />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.2 }}
+            />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.4 }}
+            />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.6 }}
+            />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 0.8 }}
+            />
+            <div
+              className="h-3 w-3 rounded-sm border border-border/50"
+              style={{ backgroundColor: "hsl(var(--chart-1))", opacity: 1 }}
+            />
           </div>
           <span>More</span>
         </div>

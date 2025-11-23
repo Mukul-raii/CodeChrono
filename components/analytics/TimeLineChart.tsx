@@ -31,7 +31,9 @@ const chartConfig = {
 export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
   // Filter and format data based on time range
   const now = new Date();
+  now.setHours(23, 59, 59, 999); // End of today
   const filterDate = new Date();
+  filterDate.setHours(0, 0, 0, 0); // Start of day
 
   if (timeRange === "day") {
     filterDate.setDate(now.getDate() - 7); // Last 7 days
@@ -44,17 +46,39 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
   const filteredData = data
     .filter((item) => {
       const itemDate = new Date(item.date);
-      return itemDate >= filterDate;
+      return itemDate >= filterDate && itemDate <= now;
     })
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .map((item) => ({
       date: new Date(item.date).toLocaleDateString("en-US", {
         month: "short",
         day: "numeric",
       }),
       duration: item.duration / 3600, // Convert to hours
+      hours: (item.duration / 3600).toFixed(2),
     }));
 
   const totalTime = filteredData.reduce((acc, item) => acc + item.duration, 0);
+
+  if (filteredData.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Coding Time Over Time</CardTitle>
+          <CardDescription>
+            {timeRange === "day" && "Daily activity for the last 7 days"}
+            {timeRange === "week" && "Weekly activity for the last 30 days"}
+            {timeRange === "month" && "Monthly activity for the last 6 months"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64 text-muted-foreground">
+            No activity data for this time range
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -87,19 +111,25 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
               tickFormatter={(value) => `${value.toFixed(1)}h`}
             />
             <ChartTooltip
-              cursor={false}
+              cursor={{
+                stroke: "hsl(var(--muted-foreground))",
+                strokeWidth: 1,
+              }}
               content={
                 <ChartTooltipContent
-                  formatter={(value) => `${(value as number).toFixed(2)} hours`}
+                  labelFormatter={(label) => `Date: ${label}`}
+                  formatter={(value, name, props) => (
+                    <span>{props.payload.hours} hours</span>
+                  )}
                 />
               }
             />
             <Area
               dataKey="duration"
               type="monotone"
-              fill="var(--color-duration)"
-              fillOpacity={0.4}
-              stroke="var(--color-duration)"
+              fill="hsl(var(--chart-1))"
+              fillOpacity={0.3}
+              stroke="hsl(var(--chart-1))"
               strokeWidth={2}
             />
           </AreaChart>

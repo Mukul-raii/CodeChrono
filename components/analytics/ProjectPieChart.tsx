@@ -34,9 +34,28 @@ const COLORS = [
 export function ProjectPieChart({ projects }: ProjectPieChartProps) {
   const totalTime = projects.reduce((acc, p) => acc + p.totalDuration, 0);
 
+  if (totalTime === 0 || projects.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Time by Project</CardTitle>
+          <CardDescription>
+            Distribution of coding time across projects
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center h-64 text-muted-foreground">
+            No project data available
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const chartData = projects.slice(0, 5).map((project, index) => ({
     name: project.name,
-    value: project.totalDuration / 3600, // Convert to hours
+    value: project.totalDuration, // Keep in seconds for accuracy
+    hours: (project.totalDuration / 3600).toFixed(2),
     percentage: ((project.totalDuration / totalTime) * 100).toFixed(1),
     fill: COLORS[index % COLORS.length],
   }));
@@ -63,12 +82,13 @@ export function ProjectPieChart({ projects }: ProjectPieChartProps) {
             <ChartTooltip
               content={
                 <ChartTooltipContent
+                  hideLabel
                   formatter={(value, name, props) => (
-                    <div className="flex flex-col">
-                      <span className="font-medium">{name}</span>
-                      <span>{(value as number).toFixed(2)} hours</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="font-medium">{props.payload.name}</span>
+                      <span>{props.payload.hours} hours</span>
                       <span className="text-muted-foreground">
-                        {props.payload.percentage}%
+                        {props.payload.percentage}% of total
                       </span>
                     </div>
                   )}
@@ -80,13 +100,19 @@ export function ProjectPieChart({ projects }: ProjectPieChartProps) {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percentage }) => `${name} (${percentage}%)`}
-              outerRadius={80}
-              fill="#8884d8"
+              label={({ percentage }) => `${percentage}%`}
+              outerRadius={100}
+              innerRadius={60}
               dataKey="value"
+              paddingAngle={2}
             >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={entry.fill} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={entry.fill}
+                  stroke="hsl(var(--background))"
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Legend />

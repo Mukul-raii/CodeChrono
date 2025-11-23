@@ -28,29 +28,51 @@ export function FloatingNavbar() {
         )}
       >
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <div className={cn("p-2 rounded-lg transition-colors", isScrolled ? "bg-primary/10" : "bg-white/10")}>
-             <Code className={cn("w-5 h-5", isScrolled ? "text-primary" : "text-foreground")} />
+          <div
+            className={cn(
+              "p-2 rounded-lg transition-colors",
+              isScrolled ? "bg-primary/10" : "bg-white/10"
+            )}
+          >
+            <Code
+              className={cn(
+                "w-5 h-5",
+                isScrolled ? "text-primary" : "text-destructive"
+              )}
+            />
           </div>
-          <span className={cn(isScrolled ? "text-foreground" : "text-foreground")}>CodeChrono</span>
+          <span
+            className={cn(isScrolled ? "text-destructive" : "text-destructive")}
+          >
+            CodeChrono
+          </span>
         </Link>
 
         <div className="flex items-center gap-6">
-           <Link href="#features" className="text-sm font-medium hover:text-primary transition-colors hidden md:block">
-             Features
-           </Link>
-           <Link href="#about" className="text-sm font-medium hover:text-primary transition-colors hidden md:block">
-             About
-           </Link>
-           <Link href="/api/auth/signin">
-             <button className={cn(
-               "px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow-md",
-               isScrolled 
-                ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                : "bg-white text-black hover:bg-gray-100 dark:bg-gray-800 dark:text-white"
-             )}>
-               Get Started
-             </button>
-           </Link>
+          <Link
+            href="#features"
+            className="text-sm font-medium hover:text-primary transition-colors hidden md:block"
+          >
+            Features
+          </Link>
+          <Link
+            href="#about"
+            className="text-sm font-medium hover:text-primary transition-colors hidden md:block"
+          >
+            About
+          </Link>
+          <Link href="/api/auth/signin">
+            <button
+              className={cn(
+                "px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow-md",
+                isScrolled
+                  ? "bg-primary text-primary-destructive hover:bg-primary/90"
+                  : "bg-white text-black hover:bg-gray-100 dark:bg-gray-800 dark:text-white"
+              )}
+            >
+              Get Started
+            </button>
+          </Link>
         </div>
       </nav>
     </div>
