@@ -198,14 +198,17 @@ export class ActivityController {
 
       if (existingActivity) {
         // Update existing entry by adding to the duration (in case new activities accumulated)
+        const earliestTimestamp =
+          BigInt(existingActivity.timestamp) <
+          BigInt(fileActivity.firstActivityAt)
+            ? BigInt(existingActivity.timestamp)
+            : BigInt(fileActivity.firstActivityAt);
+
         await prisma.activityLog.update({
           where: { id: existingActivity.id },
           data: {
             duration: existingActivity.duration + fileActivity.totalDuration,
-            timestamp: Math.min(
-              Number(existingActivity.timestamp),
-              fileActivity.firstActivityAt
-            ), // Keep earliest timestamp
+            timestamp: earliestTimestamp, // Keep earliest timestamp
           },
         });
         // Only add the new duration, not the total (since existing was already counted)
