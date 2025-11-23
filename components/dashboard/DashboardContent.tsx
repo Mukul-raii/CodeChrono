@@ -190,15 +190,28 @@ export function DashboardContent() {
                 )
               : 0;
 
+            // Check if this is today
+            const isToday = index === 6; // Last day in the array is today
+
             return (
               <div
                 key={index}
                 className="flex flex-col items-center gap-2 flex-1 group"
               >
                 <div className="relative w-full flex justify-center h-full items-end">
+                  {/* Live Indicator for Today */}
+                  {isToday && item.duration > 0 && (
+                    <div className="absolute -top-3 flex justify-center z-20">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                      </span>
+                    </div>
+                  )}
                   {/* Tooltip */}
                   <div className="absolute bottom-full mb-2 hidden group-hover:block bg-popover text-popover-foreground text-xs rounded px-2 py-1 whitespace-nowrap shadow-md z-10 border border-border">
                     {formatDuration(item.duration)}
+                    {isToday && " (Live)"}
                   </div>
                   {/* Bar */}
                   <div

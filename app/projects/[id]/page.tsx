@@ -168,9 +168,13 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           {/* View in Showcase Button */}
           <Link
-            href={`/showcase?project=${project.id}&theme=retro`}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted transition-colors"
-            style={{ color: "var(--text-primary)" }}
+            href={`/showcase?project=${project.id}&theme=gradient`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 transition-all hover:scale-105 hover:shadow-lg"
+            style={{
+              background: "var(--primary)",
+              borderColor: "var(--primary)",
+              color: "white",
+            }}
           >
             <ExternalLink className="w-4 h-4" />
             <span className="text-sm font-medium">View in Showcase</span>
@@ -180,7 +184,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         {/* Stats Overview */}
         <div className="grid grid-cols-4 gap-6 mb-8">
           {/* Today's Activity - Real-time */}
-          <div className="p-6 rounded-xl border border-border bg-linear-to-br from-primary/5 to-primary/10 shadow-sm relative overflow-hidden">
+          {/* <div className="p-6 rounded-xl border border-border bg-linear-to-br from-primary/5 to-primary/10 shadow-sm relative overflow-hidden">
             <div className="absolute top-2 right-2">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
@@ -209,7 +213,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 day: "numeric",
               })}
             </p>
-          </div>
+          </div> */}
 
           <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
             <div className="flex items-center gap-3 mb-2">
@@ -304,20 +308,35 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     )
                   : 0;
 
+                // Check if this is today
+                const isToday = index === 6; // Last day in the array is today
+
                 return (
                   <div
                     key={index}
                     className="flex flex-col items-center gap-2 flex-1"
                   >
-                    <div
-                      className="w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
-                      style={{
-                        height: `${heightPercentage}%`,
-                        background: "var(--primary)",
-                        maxWidth: "60px",
-                      }}
-                      title={`${day.date}: ${formatDuration(day.duration)}`}
-                    />
+                    <div className="relative w-full flex justify-center">
+                      {isToday && day.duration > 0 && (
+                        <div className="absolute -top-3 flex justify-center">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                          </span>
+                        </div>
+                      )}
+                      <div
+                        className="w-full rounded-t-lg transition-all hover:opacity-80 cursor-pointer"
+                        style={{
+                          height: `${heightPercentage}%`,
+                          background: "var(--primary)",
+                          maxWidth: "60px",
+                        }}
+                        title={`${day.date}: ${formatDuration(day.duration)}${
+                          isToday ? " (Live)" : ""
+                        }`}
+                      />
+                    </div>
                     <span
                       className="text-xs"
                       style={{ color: "var(--text-muted)" }}
