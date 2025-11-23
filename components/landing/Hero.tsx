@@ -13,21 +13,31 @@ export function Hero() {
               <span className="flex w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
               v1.0 is now live
             </div>
-            
+
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground mb-8 leading-tight">
               Track Your Coding Time. <br />
               <span className="text-primary relative inline-block">
                 Automatically.
-                <svg className="absolute w-full h-3 -bottom-1 left-0 text-accent/30" viewBox="0 0 100 10" preserveAspectRatio="none">
-                  <path d="M0 5 Q 50 10 100 5" stroke="currentColor" strokeWidth="8" fill="none" />
+                <svg
+                  className="absolute w-full h-3 -bottom-1 left-0 text-accent/30"
+                  viewBox="0 0 100 10"
+                  preserveAspectRatio="none"
+                >
+                  <path
+                    d="M0 5 Q 50 10 100 5"
+                    stroke="currentColor"
+                    strokeWidth="8"
+                    fill="none"
+                  />
                 </svg>
               </span>
             </h1>
-            
+
             <p className="text-xl text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              A developer-first activity tracker that logs every file, every project, every commit — with zero effort.
+              A developer-first activity tracker that logs every file, every
+              project, every commit — with zero effort.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link
                 href="/api/auth/signin"
@@ -62,19 +72,19 @@ export function Hero() {
           {/* Right Image */}
           <div className="relative flex justify-center lg:justify-end">
             <div className="relative w-full max-w-[500px] aspect-square">
-               <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl -z-10 transform translate-y-10"></div>
-               <Image 
-                 src="/marvel-miss-minutes-pack.png" 
-                 alt="CodeChrono Tracking" 
-                 fill
-                 className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
-                 priority
-               />
+              <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl -z-10 transform translate-y-10"></div>
+              <Image
+                src="/marvel-miss-minutes-pack.png"
+                alt="CodeChrono Tracking"
+                fill
+                className="object-cover drop-shadow-2xl hover:scale-105 transition-transform duration-500 object-left"
+                priority
+              />
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Background decoration */}
       <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10"></div>
     </section>

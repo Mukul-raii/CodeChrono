@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Code } from "lucide-react";
+import Image from "next/image";
+import { ThemeToggle } from "../ThemeToggle";
 
 export function FloatingNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -28,19 +29,13 @@ export function FloatingNavbar() {
         )}
       >
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
-          <div
-            className={cn(
-              "p-2 rounded-lg transition-colors",
-              isScrolled ? "bg-primary/10" : "bg-white/10"
-            )}
-          >
-            <Code
-              className={cn(
-                "w-5 h-5",
-                isScrolled ? "text-primary" : "text-destructive"
-              )}
-            />
-          </div>
+          <Image
+            src="/logo.png"
+            alt="CodeChrono"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
           <span
             className={cn(isScrolled ? "text-destructive" : "text-destructive")}
           >
@@ -49,6 +44,7 @@ export function FloatingNavbar() {
         </Link>
 
         <div className="flex items-center gap-6">
+          <ThemeToggle />
           <Link
             href="#features"
             className="text-sm font-medium hover:text-primary transition-colors hidden md:block"
@@ -66,8 +62,8 @@ export function FloatingNavbar() {
               className={cn(
                 "px-5 py-2.5 rounded-full text-sm font-medium transition-all shadow-sm hover:shadow-md",
                 isScrolled
-                  ? "bg-primary text-primary-destructive hover:bg-primary/90"
-                  : "bg-white text-black hover:bg-gray-100 dark:bg-gray-800 dark:text-white"
+                  ? "bg-foreground text-muted hover:bg-primary/90"
+                  : "bg-muted text-foreground hover:bg-gray-100 dark:bg-gray-800 dark:text-white"
               )}
             >
               Get Started

@@ -51,8 +51,8 @@ export function LanguageBarChart({ languages }: LanguageBarChartProps) {
 
   const chartData = languages.slice(0, 8).map((lang) => ({
     language: lang.language,
-    duration: lang.duration / 3600, // Convert to hours
-    hours: (lang.duration / 3600).toFixed(2),
+    duration: lang.duration / 3600000, // Convert milliseconds to hours
+    hours: (lang.duration / 3600000).toFixed(2),
     percentage: lang.percentage.toFixed(1),
   }));
 

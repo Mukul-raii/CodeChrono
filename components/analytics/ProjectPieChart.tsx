@@ -54,8 +54,8 @@ export function ProjectPieChart({ projects }: ProjectPieChartProps) {
 
   const chartData = projects.slice(0, 5).map((project, index) => ({
     name: project.name,
-    value: project.totalDuration, // Keep in seconds for accuracy
-    hours: (project.totalDuration / 3600).toFixed(2),
+    value: project.totalDuration, // Keep in milliseconds for accuracy
+    hours: (project.totalDuration / 3600000).toFixed(2), // Convert to hours for display
     percentage: ((project.totalDuration / totalTime) * 100).toFixed(1),
     fill: COLORS[index % COLORS.length],
   }));

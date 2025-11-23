@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @custom-variant dark (&:is(.dark *));
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -63,12 +64,12 @@
   --border: oklch(90% 0.076 70.697); /* Light brown border */
   --input: oklch(95% 0.038 75.164); /* Light beige input */
   --ring: oklch(46.44% 0.111 37.85); /* Brown focus ring */
-  /* Chart colors - warm palette */
-  --chart-1: oklch(46.44% 0.111 37.85); /* Deep brown */
-  --chart-2: oklch(55% 0.195 38.402); /* Medium brown */
-  --chart-3: oklch(22.45% 0.075 37.85); /* Dark brown */
-  --chart-4: oklch(70% 0.191 22.216); /* Warm orange-red */
-  --chart-5: oklch(82% 0.189 84.429); /* Golden yellow */
+  /* Chart colors - warm caramel palette with proper visibility */
+  --chart-1: oklch(0.837 0.128 66.29); /* Light caramel */
+  --chart-2: oklch(0.705 0.213 47.604); /* Medium caramel */
+  --chart-3: oklch(0.646 0.222 41.116); /* Rich caramel */
+  --chart-4: oklch(0.553 0.195 38.402); /* Dark caramel */
+  --chart-5: oklch(0.47 0.157 37.304); /* Deep chocolate brown */
   /* Sidebar colors */
   --sidebar: oklch(98% 0.016 73.684); /* Light cream sidebar */
   --sidebar-foreground: oklch(40% 0.123 38.172); /* Dark brown sidebar text */

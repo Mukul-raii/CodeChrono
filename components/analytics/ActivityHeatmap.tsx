@@ -94,7 +94,7 @@ export function ActivityHeatmap({ data }: ActivityHeatmapProps) {
                     className="h-3 w-3 rounded-sm border border-border/50 transition-all hover:scale-110 cursor-pointer"
                     style={getIntensityStyle(day.duration)}
                     title={`${day.date.toLocaleDateString()}: ${(
-                      day.duration / 3600
+                      day.duration / 3600000
                     ).toFixed(2)} hours`}
                   />
                 ))}

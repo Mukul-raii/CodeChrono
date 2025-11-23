@@ -54,8 +54,8 @@ export function TimeLineChart({ data, timeRange }: TimeLineChartProps) {
         month: "short",
         day: "numeric",
       }),
-      duration: item.duration / 3600, // Convert to hours
-      hours: (item.duration / 3600).toFixed(2),
+      duration: item.duration / 3600000, // Convert milliseconds to hours
+      hours: (item.duration / 3600000).toFixed(2),
     }));
 
   const totalTime = filteredData.reduce((acc, item) => acc + item.duration, 0);

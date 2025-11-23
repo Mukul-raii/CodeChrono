@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import Image from "next/image";
 
 // Menu items
 const items = [
@@ -73,9 +74,19 @@ const SidebarWrapper = ({
       <Sidebar variant="sidebar" collapsible="none" className="h-svh bg-muted">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="p-2 mb-10">
-              <a className="text-2xl font-bold " href="/dashboard">
-                CodeChrono
+            <SidebarGroupLabel className="p-4 mb-8 h-auto">
+              <a className="flex items-center gap-3" href="/dashboard">
+                <div className="relative w-8 h-8">
+                  <Image
+                    src="/logo.png"
+                    alt="CodeChrono"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <span className="text-xl font-bold text-foreground">
+                  CodeChrono
+                </span>
               </a>
             </SidebarGroupLabel>
             <SidebarGroupContent>
@@ -132,11 +143,10 @@ const SidebarWrapper = ({
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <div className="flex-1" />
+        <header className="flex h-16 shrink-0 items-center justify-end border-b  gap-4 px-6">
           <ThemeToggle />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8">
+        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8 pt-0">
           {children}
         </div>
       </SidebarInset>
