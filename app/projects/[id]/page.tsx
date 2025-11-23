@@ -1,9 +1,17 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { notFound } from "next/navigation";
-import { GitCommit, Calendar, Code, FileCode } from "lucide-react";
+import {
+  GitCommit,
+  Calendar,
+  Code,
+  FileCode,
+  Activity,
+  ExternalLink,
+} from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { ProjectDetailClient } from "@/components/projects/ProjectDetailClient";
+import Link from "next/link";
 
 function formatDuration(ms: number) {
   const seconds = Math.floor(ms / 1000);
@@ -70,7 +78,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   });
   const languages = Array.from(languageMap.entries())
     .map(([language, duration]) => ({ language, duration }))
-    .sort((a, b) => b.duration - a.duration);
+    .sort((a, b) => b.duration - a.duration)
+    .slice(0, 5); // Show only top 5 languages
 
   // Editor breakdown
   const editorMap = new Map<string, number>();
@@ -115,8 +124,19 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     return {
       date: date.toLocaleDateString("en-US", { weekday: "short" }),
       duration: duration,
+      fullDate: date,
     };
   });
+
+  // Calculate today's total time for display
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayActivity = dailyActivity.find((d) => {
+    const actDate = new Date(d.fullDate);
+    actDate.setHours(0, 0, 0, 0);
+    return actDate.getTime() === today.getTime();
+  });
+  const todayTimeSpent = todayActivity?.duration || 0;
 
   // Commit statistics
   const totalCommits = project.commits.length;
@@ -132,21 +152,65 @@ export default async function ProjectDetailPage({ params }: PageProps) {
     <div className="min-h-screen" style={{ background: "var(--background)" }}>
       <div className="max-w-7xl mx-auto p-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1
-            className="text-3xl font-bold mb-2"
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1
+              className="text-3xl font-bold mb-2"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {project.name.charAt(0).toUpperCase() +
+                project.name.slice(1).toLowerCase()}
+            </h1>
+            <p className="text-sm" style={{ color: "var(--text-muted)" }}>
+              {project.path}
+            </p>
+          </div>
+
+          {/* View in Showcase Button */}
+          <Link
+            href={`/showcase?project=${project.id}&theme=retro`}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-card hover:bg-muted transition-colors"
             style={{ color: "var(--text-primary)" }}
           >
-            {project.name.charAt(0).toUpperCase() +
-              project.name.slice(1).toLowerCase()}
-          </h1>
-          <p className="text-sm" style={{ color: "var(--text-muted)" }}>
-            {project.path}
-          </p>
+            <ExternalLink className="w-4 h-4" />
+            <span className="text-sm font-medium">View in Showcase</span>
+          </Link>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-4 gap-6 mb-8">
+          {/* Today's Activity - Real-time */}
+          <div className="p-6 rounded-xl border border-border bg-linear-to-br from-primary/5 to-primary/10 shadow-sm relative overflow-hidden">
+            <div className="absolute top-2 right-2">
+              <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-primary"></span>
+              </span>
+            </div>
+            <div className="flex items-center gap-3 mb-2">
+              <Activity
+                className="w-5 h-5"
+                style={{ color: "var(--primary)" }}
+              />
+              <span className="text-sm" style={{ color: "var(--text-muted)" }}>
+                Today&apos;s Activity
+              </span>
+            </div>
+            <p
+              className="text-2xl font-bold"
+              style={{ color: "var(--text-primary)" }}
+            >
+              {formatDuration(todayTimeSpent)}
+            </p>
+            <p className="text-xs mt-1" style={{ color: "var(--text-muted)" }}>
+              Live •{" "}
+              {new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+
           <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <Calendar
@@ -283,17 +347,11 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   No language data
                 </p>
               ) : (
-                languages.map((lang, index) => {
+                languages.map((lang) => {
                   const percentage =
                     totalDuration > 0
                       ? Math.round((lang.duration / totalDuration) * 100)
                       : 0;
-                  const colors = [
-                    "var(--primary)",
-                    "var(--primary-light)",
-                    "var(--accent)",
-                    "var(--secondary)",
-                  ];
 
                   return (
                     <div key={lang.language}>
