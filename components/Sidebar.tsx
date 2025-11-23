@@ -23,6 +23,8 @@ import {
   Settings,
   LayoutDashboardIcon,
   LogOut,
+  Clock,
+  Clock12,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -77,10 +79,14 @@ const SidebarWrapper = ({
 
   return (
     <SidebarProvider>
-      <Sidebar variant="sidebar" collapsible="none" className="h-svh">
+      <Sidebar variant="sidebar" collapsible="none" className="h-svh ">
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>CodeChrono</SidebarGroupLabel>
+            <SidebarGroupLabel className="p-2 mb-10">
+              <a className="text-2xl font-bold " href="/dashboard">
+                CodeChrono
+              </a>
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {items.map((item) => (
@@ -90,8 +96,8 @@ const SidebarWrapper = ({
                       tooltip={item.title}
                       isActive={pathname === item.url}
                     >
-                      <a href={item.url}>
-                        <item.icon />
+                      <a className="text-xl" href={item.url}>
+                        <item.icon className="h-6 w-6" />
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
@@ -108,9 +114,9 @@ const SidebarWrapper = ({
               <SidebarMenuItem>
                 <SidebarMenuButton className="w-full justify-between gap-3 h-auto py-3">
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <User className="h-5 w-5 shrink-0" />
+                    <User className="h-6 w-6 shrink-0" />
                     <div className="flex flex-col items-start min-w-0 flex-1">
-                      <span className="text-sm font-medium truncate w-full">
+                      <span className="text-xl font-medium truncate w-full">
                         {userName || "User"}
                       </span>
                       <span className="text-xs text-muted-foreground truncate w-full">
@@ -123,7 +129,7 @@ const SidebarWrapper = ({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleSignOut}
-                  className="w-full justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="w-full text-xl justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
@@ -136,8 +142,6 @@ const SidebarWrapper = ({
 
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <div className="h-4 w-px bg-border mx-2" />
           <div className="flex-1" />
           <ThemeToggle />
         </header>

@@ -14,17 +14,18 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   projects      Project[]
-  apiToken      String?   @unique @default(cuid()) // Simple API token for the extension
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  dailyStats    DailyStats[]
+  apiToken      String?      @unique @default(cuid()) // Simple API token for the extension
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
 
 model Account {
@@ -62,6 +63,7 @@ model Project {
   user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   activities ActivityLog[]
   commits    GitCommit[]
+  dailyStats DailyStats[]
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
 
@@ -105,4 +107,24 @@ model GitCommit {
 
   @@unique([projectId, commitHash])
   @@index([projectId, timestamp])
+}
+
+model DailyStats {
+  id                String   @id @default(cuid())
+  userId            String
+  projectId         String?
+  date              DateTime @db.Date
+  totalDuration     Int      @default(0) // Total milliseconds coded that day
+  languageBreakdown Json? // { "typescript": 3600000, "python": 1800000 }
+  filesEdited       Int      @default(0)
+  commitsCount      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId, date])
+  @@index([userId, date])
+  @@index([projectId, date])
 }

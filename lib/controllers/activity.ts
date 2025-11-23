@@ -254,6 +254,86 @@ export class ActivityController {
     };
   }
 
+  static async syncDailyStats(apiToken: string, dailyStats: any[]) {
+    const user = await prisma.user.findUnique({
+      where: { apiToken },
+    });
+
+    if (!user) {
+      throw new Error("Invalid Token");
+    }
+
+    let syncedCount = 0;
+
+    for (const stat of dailyStats) {
+      // Find or create project
+      let project = await prisma.project.findUnique({
+        where: {
+          userId_path: {
+            userId: user.id,
+            path: stat.projectPath,
+          },
+        },
+      });
+
+      if (!project) {
+        project = await prisma.project.create({
+          data: {
+            name: stat.projectPath.split("/").pop() || "Unknown Project",
+            path: stat.projectPath,
+            userId: user.id,
+          },
+        });
+      }
+
+      // Parse language breakdown
+      const languageBreakdown =
+        typeof stat.languageBreakdown === "string"
+          ? JSON.parse(stat.languageBreakdown)
+          : stat.languageBreakdown;
+
+      // Upsert daily stats
+      await prisma.dailyStats.upsert({
+        where: {
+          userId_projectId_date: {
+            userId: user.id,
+            projectId: project.id,
+            date: new Date(stat.date),
+          },
+        },
+        update: {
+          totalDuration: {
+            increment: stat.totalDuration,
+          },
+          languageBreakdown,
+          filesEdited: {
+            increment: stat.filesEdited,
+          },
+          commitsCount: {
+            increment: stat.commitCount,
+          },
+        },
+        create: {
+          userId: user.id,
+          projectId: project.id,
+          date: new Date(stat.date),
+          totalDuration: stat.totalDuration,
+          languageBreakdown,
+          filesEdited: stat.filesEdited,
+          commitsCount: stat.commitCount,
+        },
+      });
+
+      syncedCount++;
+    }
+
+    return {
+      success: true,
+      message: `Synced ${syncedCount} daily stats`,
+      syncedCount,
+    };
+  }
+
   /**
    * Calculate total duration spent on each commit by summing activities with matching commitId
    */
@@ -287,69 +367,135 @@ export class ActivityController {
   }
 
   static async getDashboardStats(userId: string) {
-    // Get all projects with their activities
-    const projects = await prisma.project.findMany({
-      where: { userId },
-      include: {
-        activities: {
-          select: {
-            duration: true,
-            language: true,
-            timestamp: true,
-          },
+    // Fetch from DailyStats instead of aggregating ActivityLog
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const dailyStats = await prisma.dailyStats.findMany({
+      where: {
+        userId,
+        date: {
+          gte: thirtyDaysAgo,
         },
+      },
+      include: {
+        project: true,
+      },
+      orderBy: {
+        date: "asc",
       },
     });
 
-    // Calculate total time and stats
+    // Also get current day activities from ActivityLog (not yet aggregated)
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayTimestamp = BigInt(todayStart.getTime());
+
+    const todayActivities = await prisma.activityLog.findMany({
+      where: {
+        project: {
+          userId,
+        },
+        timestamp: {
+          gte: todayTimestamp,
+        },
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    // Calculate totals
     let totalTime = 0;
+    const projectMap = new Map<string, any>();
     const languageMap = new Map<string, number>();
     const dailyMap = new Map<string, number>();
-    const hourlyMap = new Map<number, number>();
 
-    projects.forEach((project) => {
-      project.activities.forEach((activity) => {
-        totalTime += activity.duration;
+    // Process DailyStats
+    dailyStats.forEach((stat) => {
+      totalTime += stat.totalDuration;
 
-        // Language stats
-        const langDuration = languageMap.get(activity.language) || 0;
-        languageMap.set(activity.language, langDuration + activity.duration);
+      // Project stats
+      const projectKey = stat.projectId || "unknown";
+      if (!projectMap.has(projectKey)) {
+        projectMap.set(projectKey, {
+          id: stat.project?.id,
+          name: stat.project?.name || "Unknown",
+          path: stat.project?.path || "",
+          totalDuration: 0,
+          activityCount: 0,
+          lastActive: BigInt(0),
+        });
+      }
+      const projectStat = projectMap.get(projectKey);
+      projectStat.totalDuration += stat.totalDuration;
+      projectStat.activityCount += stat.filesEdited;
 
-        // Daily activity
-        const date = new Date(Number(activity.timestamp)).toLocaleDateString();
-        const dailyDuration = dailyMap.get(date) || 0;
-        dailyMap.set(date, dailyDuration + activity.duration);
+      // Language breakdown
+      const breakdown = stat.languageBreakdown as Record<string, number> | null;
+      if (breakdown) {
+        Object.entries(breakdown).forEach(([lang, duration]) => {
+          languageMap.set(lang, (languageMap.get(lang) || 0) + duration);
+        });
+      }
 
-        // Hourly distribution
-        const hour = new Date(Number(activity.timestamp)).getHours();
-        const hourlyDuration = hourlyMap.get(hour) || 0;
-        hourlyMap.set(hour, hourlyDuration + activity.duration);
-      });
+      // Daily activity
+      const dateStr = stat.date.toISOString().split("T")[0];
+      dailyMap.set(dateStr, (dailyMap.get(dateStr) || 0) + stat.totalDuration);
     });
 
-    // Format project stats
-    const projectStats = projects.map((project) => {
-      const totalDuration = project.activities.reduce(
-        (sum, a) => sum + a.duration,
-        0
-      );
-      const lastActivity = project.activities.reduce(
-        (latest, a) =>
-          Number(a.timestamp) > Number(latest) ? a.timestamp : latest,
-        BigInt(0)
-      );
+    // Process today's activities (not yet in DailyStats)
+    const todayDateStr = new Date().toISOString().split("T")[0];
+    let todayDuration = 0;
+    const todayLanguages = new Map<string, number>();
 
-      return {
-        id: project.id,
-        name: project.name,
-        path: project.path,
-        totalDuration,
-        activityCount: project.activities.length,
-        lastActive: lastActivity,
-      };
+    todayActivities.forEach((activity) => {
+      todayDuration += activity.duration;
+      totalTime += activity.duration;
+
+      // Project stats
+      const projectKey = activity.projectId;
+      if (!projectMap.has(projectKey)) {
+        projectMap.set(projectKey, {
+          id: activity.project.id,
+          name: activity.project.name,
+          path: activity.project.path,
+          totalDuration: 0,
+          activityCount: 0,
+          lastActive: BigInt(0),
+        });
+      }
+      const projectStat = projectMap.get(projectKey);
+      projectStat.totalDuration += activity.duration;
+      projectStat.activityCount++;
+      projectStat.lastActive =
+        activity.timestamp > projectStat.lastActive
+          ? activity.timestamp
+          : projectStat.lastActive;
+
+      // Language stats
+      languageMap.set(
+        activity.language,
+        (languageMap.get(activity.language) || 0) + activity.duration
+      );
+      todayLanguages.set(
+        activity.language,
+        (todayLanguages.get(activity.language) || 0) + activity.duration
+      );
     });
 
-    // Format language stats with percentages
+    // Add today's duration to daily map
+    if (todayDuration > 0) {
+      dailyMap.set(
+        todayDateStr,
+        (dailyMap.get(todayDateStr) || 0) + todayDuration
+      );
+    }
+
+    const projects = Array.from(projectMap.values()).sort(
+      (a, b) => b.totalDuration - a.totalDuration
+    );
+
     const languages = Array.from(languageMap.entries())
       .map(([language, duration]) => ({
         language,
@@ -358,30 +504,20 @@ export class ActivityController {
       }))
       .sort((a, b) => b.duration - a.duration);
 
-    // Format daily activity (last 30 days)
     const dailyActivity = Array.from(dailyMap.entries())
       .map(([date, duration]) => ({ date, duration }))
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(-30);
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-    // Format hourly distribution (0-23 hours)
-    const hourlyDistribution = Array.from({ length: 24 }, (_, hour) => ({
-      hour,
-      duration: hourlyMap.get(hour) || 0,
-    }));
-
-    const activeProjects = projectStats.filter(
-      (p) => p.totalDuration > 0
-    ).length;
+    const activeProjects = projects.filter((p) => p.totalDuration > 0).length;
 
     return {
       totalTime,
-      totalProjects: projects.length,
+      totalProjects: projectMap.size,
       activeProjects,
-      projects: projectStats.sort((a, b) => b.totalDuration - a.totalDuration),
+      projects,
       languages,
       dailyActivity,
-      hourlyDistribution,
+      hourlyDistribution: [], // Can be added later if needed from ActivityLog
     };
   }
 

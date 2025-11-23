@@ -72,6 +72,15 @@ const typeDefs = `
     branch: String
   }
 
+  input DailyStatsInput {
+    date: String!
+    projectPath: String!
+    totalDuration: Int!
+    languageBreakdown: String!
+    filesEdited: Int!
+    commitCount: Int!
+  }
+
   type SyncResponse {
     success: Boolean!
     message: String!
@@ -168,6 +177,7 @@ const typeDefs = `
     syncActivity(input: [ActivityInput!]!): SyncResponse!
     syncFileActivities(input: [FileActivityInput!]!): SyncResponse!
     syncCommits(input: [CommitInput!]!): SyncResponse!
+    syncDailyStats(input: [DailyStatsInput!]!): SyncResponse!
   }
 `;
 
@@ -264,6 +274,16 @@ const resolvers = {
       if (!token) throw new Error("Unauthorized");
 
       return ActivityController.syncCommits(token, input);
+    },
+
+    syncDailyStats: async (_: any, { input }: any, context: any) => {
+      const token = context.request.headers
+        ?.get("authorization")
+        ?.replace("Bearer ", "");
+
+      if (!token) throw new Error("Unauthorized");
+
+      return ActivityController.syncDailyStats(token, input);
     },
   },
 };
