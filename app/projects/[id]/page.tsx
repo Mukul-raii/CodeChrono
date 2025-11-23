@@ -3,6 +3,7 @@ import { authOptions } from "../../api/auth/[...nextauth]/route";
 import { notFound } from "next/navigation";
 import { GitCommit, Calendar, Code, FileCode } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { ProjectDetailClient } from "@/components/projects/ProjectDetailClient";
 
 function formatDuration(ms: number) {
   const seconds = Math.floor(ms / 1000);
@@ -24,6 +25,14 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
   // @ts-expect-error - session user id
   const userId = session?.user?.id;
+
+  // Fetch API token
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { apiToken: true },
+  });
+
+  const apiToken = user?.apiToken || "";
 
   // Fetch project with all related data
   const project = await prisma.project.findFirst({
@@ -131,10 +140,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         {/* Stats Overview */}
         <div className="grid grid-cols-4 gap-6 mb-8">
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <div className="flex items-center gap-3 mb-2">
@@ -155,10 +164,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
 
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <div className="flex items-center gap-3 mb-2">
@@ -179,10 +188,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
 
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <div className="flex items-center gap-3 mb-2">
@@ -200,10 +209,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
 
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <div className="flex items-center gap-3 mb-2">
@@ -227,10 +236,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-2 gap-6 mb-8">
           {/* Daily Time Graph */}
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <h2
@@ -286,10 +295,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
 
           {/* Language Split Pie */}
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <h2
@@ -337,7 +346,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                       </div>
                       <div
                         className="h-2 rounded-full overflow-hidden"
-                        style={{ background: "var(--background)" }}
+                        style={{ background: "hsl(var(--muted))" }}
                       >
                         <div
                           className="h-full rounded-full transition-all"
@@ -356,12 +365,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
         </div>
 
         <div className="grid grid-cols-2 gap-6 mb-8">
-          {/* Editor Usage */}
+          {/* Editor Usage - Compact Layout */}
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <h2
@@ -370,51 +379,63 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             >
               Editor Usage
             </h2>
-            <div className="space-y-2">
-              {editors.map((editor) => {
-                const editorPercentage =
-                  totalDuration > 0
-                    ? (editor.duration / totalDuration) * 100
-                    : 0;
+            <div className="space-y-3">
+              {editors.length === 0 ? (
+                <p
+                  className="text-center py-4 text-sm"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  No editor data
+                </p>
+              ) : (
+                editors.map((editor) => {
+                  const editorPercentage =
+                    totalDuration > 0
+                      ? (editor.duration / totalDuration) * 100
+                      : 0;
 
-                return (
-                  <div key={editor.editor} className="space-y-1">
-                    <div className="flex items-center justify-between text-sm">
-                      <span
-                        className="font-medium"
-                        style={{ color: "var(--text-primary)" }}
-                      >
-                        {editor.editor}
-                      </span>
-                      <span style={{ color: "var(--text-muted)" }}>
-                        {formatDuration(editor.duration)} (
-                        {editorPercentage.toFixed(1)}%)
-                      </span>
-                    </div>
-                    <div
-                      className="h-1.5 rounded-full overflow-hidden"
-                      style={{ background: "var(--background)" }}
-                    >
+                  return (
+                    <div key={editor.editor} className="space-y-1.5">
+                      <div className="flex items-center justify-between text-sm">
+                        <span
+                          className="font-medium"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {editor.editor}
+                        </span>
+                        <span
+                          className="text-xs"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {formatDuration(editor.duration)} (
+                          {editorPercentage.toFixed(1)}%)
+                        </span>
+                      </div>
                       <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${editorPercentage}%`,
-                          background: "var(--primary)",
-                        }}
-                      />
+                        className="h-2 rounded-full overflow-hidden"
+                        style={{ background: "hsl(var(--muted))" }}
+                      >
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${editorPercentage}%`,
+                            background: "var(--primary)",
+                          }}
+                        />
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })
+              )}
             </div>
           </div>
 
           {/* Top Files */}
           <div
-            className="p-6 rounded-xl border"
+            className="p-6 rounded-xl border shadow-sm"
             style={{
-              background: "var(--surface)",
-              borderColor: "var(--border)",
+              background: "hsl(var(--card))",
+              borderColor: "hsl(var(--border))",
             }}
           >
             <h2
@@ -428,10 +449,12 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <div
                   key={file.filePath}
                   className="flex items-center gap-3 p-3 rounded-lg"
-                  style={{ background: "var(--background)" }}
+                  style={{
+                    background: "hsl(var(--muted))",
+                  }}
                 >
                   <span
-                    className="text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center"
+                    className="text-xs font-semibold w-6 h-6 rounded-full flex items-center justify-center shrink-0"
                     style={{ background: "var(--primary)", color: "white" }}
                   >
                     {index + 1}
@@ -451,7 +474,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                     </p>
                   </div>
                   <span
-                    className="text-sm font-medium"
+                    className="text-sm font-medium shrink-0"
                     style={{ color: "var(--primary)" }}
                   >
                     {formatDuration(file.duration)}
@@ -462,97 +485,29 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Git Commits */}
-        <div
-          className="p-6 rounded-xl border"
-          style={{ background: "var(--surface)", borderColor: "var(--border)" }}
-        >
-          <h2
-            className="text-lg font-semibold mb-6"
-            style={{ color: "var(--text-primary)" }}
-          >
-            Recent Git Commits (Time Tracked)
-          </h2>
-          <div className="space-y-3">
-            {project.commits.length === 0 ? (
-              <p
-                className="text-center py-8"
-                style={{ color: "var(--text-muted)" }}
-              >
-                No commits tracked yet. Make commits while the extension is
-                running to track time!
-              </p>
-            ) : (
-              project.commits.map((commit) => {
-                return (
-                  <div
-                    key={commit.id}
-                    className="p-4 rounded-lg border"
-                    style={{
-                      background: "var(--background)",
-                      borderColor: "var(--border)",
-                    }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <code
-                            className="text-xs px-2 py-1 rounded"
-                            style={{
-                              background: "var(--surface)",
-                              color: "var(--primary)",
-                            }}
-                          >
-                            {commit.commitHash.substring(0, 8)}
-                          </code>
-                          {commit.branch && (
-                            <span
-                              className="text-xs px-2 py-1 rounded"
-                              style={{
-                                background: "var(--primary)",
-                                color: "white",
-                              }}
-                            >
-                              {commit.branch}
-                            </span>
-                          )}
-                        </div>
-                        <p
-                          className="font-medium mb-1"
-                          style={{ color: "var(--text-primary)" }}
-                        >
-                          {commit.message}
-                        </p>
-                        <p
-                          className="text-sm"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          {commit.author} •{" "}
-                          {new Date(Number(commit.timestamp)).toLocaleString()}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p
-                          className="text-lg font-bold mb-1"
-                          style={{ color: "var(--primary)" }}
-                        >
-                          {formatDuration(commit.totalDuration)}
-                        </p>
-                        <p
-                          className="text-xs"
-                          style={{ color: "var(--text-muted)" }}
-                        >
-                          {commit.filesChanged} files • +{commit.linesAdded} -
-                          {commit.linesDeleted}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </div>
+        {/* Client Component for Commits with Pagination and Showcase */}
+        <ProjectDetailClient
+          commits={project.commits.map((c) => ({
+            ...c,
+            timestamp: c.timestamp,
+          }))}
+          projectId={project.id}
+          projectData={{
+            name: project.name,
+            description: `${project.path}`,
+            timeSpent: formatDuration(totalDuration),
+            commits: totalCommits,
+            languages: languages.map((l) => ({
+              name: l.language,
+              percentage:
+                totalDuration > 0
+                  ? Math.round((l.duration / totalDuration) * 100)
+                  : 0,
+            })),
+            trend: dailyActivity.map((d) => d.duration),
+          }}
+          apiToken={apiToken}
+        />
       </div>
     </div>
   );

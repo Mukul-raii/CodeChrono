@@ -165,30 +165,40 @@ export function DashboardContent() {
       <div className="rounded-lg border bg-card p-6">
         <h3 className="text-lg font-bold mb-6">Activity (Last 7 Days)</h3>
         <div className="flex items-end justify-between h-64 gap-2">
-          {chartData.map((item, index) => (
-            <div
-              key={index}
-              className="flex flex-col items-center gap-2 flex-1 group"
-            >
-              <div className="relative w-full flex justify-center h-full items-end">
-                {/* Tooltip */}
-                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-popover text-popover-foreground text-xs rounded px-2 py-1 whitespace-nowrap shadow-md z-10 border border-border">
-                  {formatDuration(item.duration)}
+          {chartData.map((item, index) => {
+            // Better scaling: ensure minimum height when there's data
+            const hasData = chartData.some((d) => d.duration > 0);
+            const heightPercentage = hasData
+              ? Math.max(
+                  (item.duration / maxDuration) * 100,
+                  item.duration > 0 ? 8 : 0
+                )
+              : 0;
+
+            return (
+              <div
+                key={index}
+                className="flex flex-col items-center gap-2 flex-1 group"
+              >
+                <div className="relative w-full flex justify-center h-full items-end">
+                  {/* Tooltip */}
+                  <div className="absolute bottom-full mb-2 hidden group-hover:block bg-popover text-popover-foreground text-xs rounded px-2 py-1 whitespace-nowrap shadow-md z-10 border border-border">
+                    {formatDuration(item.duration)}
+                  </div>
+                  {/* Bar */}
+                  <div
+                    className="w-full max-w-[60px] bg-primary/80 hover:bg-primary rounded-t-md transition-all duration-500 ease-out"
+                    style={{
+                      height: `${heightPercentage}%`,
+                    }}
+                  ></div>
                 </div>
-                {/* Bar */}
-                <div
-                  className="w-full max-w-[60px] bg-primary/80 hover:bg-primary rounded-t-md transition-all duration-500 ease-out"
-                  style={{
-                    height: `${(item.duration / maxDuration) * 100}%`,
-                    minHeight: item.duration > 0 ? "4px" : "0",
-                  }}
-                ></div>
+                <span className="text-xs text-muted-foreground font-medium">
+                  {item.label}
+                </span>
               </div>
-              <span className="text-xs text-muted-foreground font-medium">
-                {item.label}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
