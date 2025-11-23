@@ -267,68 +267,67 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           </div>
 
           {/* Language Split Pie */}
-          <div className="grid grid-cols-2 gap-3 ">
-            <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
-              <h2
-                className="text-lg font-semibold mb-6"
-                style={{ color: "var(--text-primary)" }}
-              >
-                Language Distribution
-              </h2>
-              <div className="space-y-4">
-                {languages.length === 0 ? (
-                  <p
-                    className="text-center py-8"
-                    style={{ color: "var(--text-muted)" }}
-                  >
-                    No language data
-                  </p>
-                ) : (
-                  languages.map((lang, index) => {
-                    const percentage =
-                      totalDuration > 0
-                        ? Math.round((lang.duration / totalDuration) * 100)
-                        : 0;
-                    const colors = [
-                      "var(--primary)",
-                      "var(--primary-light)",
-                      "var(--accent)",
-                      "var(--secondary)",
-                    ];
+          <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
+            <h2
+              className="text-lg font-semibold mb-6"
+              style={{ color: "var(--text-primary)" }}
+            >
+              Language Distribution
+            </h2>
+            <div className="space-y-4">
+              {languages.length === 0 ? (
+                <p
+                  className="text-center py-8"
+                  style={{ color: "var(--text-muted)" }}
+                >
+                  No language data
+                </p>
+              ) : (
+                languages.map((lang, index) => {
+                  const percentage =
+                    totalDuration > 0
+                      ? Math.round((lang.duration / totalDuration) * 100)
+                      : 0;
+                  const colors = [
+                    "var(--primary)",
+                    "var(--primary-light)",
+                    "var(--accent)",
+                    "var(--secondary)",
+                  ];
 
-                    return (
-                      <div key={lang.language}>
-                        <div className="flex items-center justify-between mb-2">
-                          <span
-                            className="text-sm font-medium"
-                            style={{ color: "var(--text-primary)" }}
-                          >
-                            {lang.language}
-                          </span>
-                          <span
-                            className="text-sm"
-                            style={{ color: "var(--text-muted)" }}
-                          >
-                            {percentage}% • {formatDuration(lang.duration)}
-                          </span>
-                        </div>
-                        <div className="h-2 rounded-full overflow-hidden bg-muted">
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${percentage}%`,
-                              background: "var(--primary)",
-                            }}
-                          />
-                        </div>
+                  return (
+                    <div key={lang.language}>
+                      <div className="flex items-center justify-between mb-2">
+                        <span
+                          className="text-sm font-medium"
+                          style={{ color: "var(--text-primary)" }}
+                        >
+                          {lang.language}
+                        </span>
+                        <span
+                          className="text-sm"
+                          style={{ color: "var(--text-muted)" }}
+                        >
+                          {percentage}% • {formatDuration(lang.duration)}
+                        </span>
                       </div>
-                    );
-                  })
-                )}
-              </div>
+                      <div className="h-2 rounded-full overflow-hidden bg-muted">
+                        <div
+                          className="h-full rounded-full transition-all"
+                          style={{
+                            width: `${percentage}%`,
+                            background: "var(--primary)",
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
-            {/* Editor Usage - Compact Layout */}
-            <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
+          </div>
+          {/* Editor Usage - Compact Layout */}
+          {/*   <div className="p-6 rounded-xl border border-border bg-card shadow-sm">
               <h2
                 className="text-lg font-semibold mb-4"
                 style={{ color: "var(--text-primary)" }}
@@ -381,8 +380,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                   })
                 )}
               </div>
-            </div>
-          </div>
+            </div> */}
         </div>
 
         <div className="grid grid-cols-2 gap-6 mb-8">

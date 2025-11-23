@@ -65,6 +65,16 @@ export function DashboardContent() {
 
   const maxDuration = Math.max(...chartData.map((d) => d.duration), 1);
 
+  // Debug logging
+  if (typeof window !== "undefined") {
+    console.log("Dashboard Activity Debug:", {
+      todayDate: new Date().toISOString().split("T")[0],
+      dailyActivityFromAPI: stats?.dailyActivity,
+      chartData: chartData,
+      last7DaysRange: last7Days.map((d) => d.toISOString().split("T")[0]),
+    });
+  }
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">

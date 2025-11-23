@@ -1,5 +1,6 @@
 import { FloatingNavbar } from "@/components/landing/FloatingNavbar";
 import { Hero } from "@/components/landing/Hero";
+import { DashboardShowcase } from "@/components/landing/DashboardShowcase";
 import { Features } from "@/components/landing/Features";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Footer } from "@/components/landing/Footer";
@@ -19,6 +20,7 @@ export default async function Home() {
       <FloatingNavbar />
       <main>
         <Hero />
+        <DashboardShowcase />
         <Features />
         <HowItWorks />
       </main>

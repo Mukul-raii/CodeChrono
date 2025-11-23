@@ -452,6 +452,10 @@ export class ActivityController {
     let todayDuration = 0;
     const todayLanguages = new Map<string, number>();
 
+    console.log(
+      `[Dashboard] Processing ${todayActivities.length} activities for today (${todayDateStr})`
+    );
+
     todayActivities.forEach((activity) => {
       todayDuration += activity.duration;
       totalTime += activity.duration;
@@ -493,6 +497,11 @@ export class ActivityController {
         todayDateStr,
         (dailyMap.get(todayDateStr) || 0) + todayDuration
       );
+      console.log(
+        `[Dashboard] Added today's duration: ${todayDuration}ms to date ${todayDateStr}`
+      );
+    } else {
+      console.log(`[Dashboard] No activity for today yet`);
     }
 
     const projects = Array.from(projectMap.values()).sort(
@@ -510,6 +519,11 @@ export class ActivityController {
     const dailyActivity = Array.from(dailyMap.entries())
       .map(([date, duration]) => ({ date, duration }))
       .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    console.log(
+      `[Dashboard] Final dailyActivity array:`,
+      dailyActivity.map((d) => `${d.date}: ${d.duration}ms`)
+    );
 
     const activeProjects = projects.filter((p) => p.totalDuration > 0).length;
 
