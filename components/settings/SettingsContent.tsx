@@ -111,9 +111,9 @@ export function SettingsContent({
         </CardHeader>
         <CardContent className="space-y-4">
           <ol className="list-decimal list-inside space-y-2 text-sm">
-            <li>Install the CodeChrono extension from VS Code Marketplace</li>
+            <li>Install the Miss-Minutes extension from VS Code Marketplace</li>
             <li>Open VS Code settings (Cmd/Ctrl + ,)</li>
-            <li>Search for &quot;CodeChrono&quot;</li>
+            <li>Search for &quot;Miss-Minutes&quot;</li>
             <li>Paste your API token in the &quot;Api Token&quot; field</li>
             <li>
               Start coding and your activity will be tracked automatically!

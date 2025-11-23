@@ -1,5 +1,5 @@
 /**
- * API Client for CodeChrono
+ * API Client for Miss-Minutes
  * Centralized GraphQL client configuration
  */
 

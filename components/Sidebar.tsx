@@ -79,13 +79,13 @@ const SidebarWrapper = ({
                 <div className="relative w-8 h-8">
                   <Image
                     src="/logo.png"
-                    alt="CodeChrono"
+                    alt="Miss-Minutes"
                     fill
                     className="object-contain"
                   />
                 </div>
                 <span className="text-xl font-bold text-foreground">
-                  CodeChrono
+                  Miss-Minutes
                 </span>
               </a>
             </SidebarGroupLabel>

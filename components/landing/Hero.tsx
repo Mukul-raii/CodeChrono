@@ -75,7 +75,7 @@ export function Hero() {
               <div className="absolute inset-0 bg-primary/10 rounded-full blur-3xl -z-10 transform translate-y-10"></div>
               <Image
                 src="/marvel-miss-minutes-pack.png"
-                alt="CodeChrono Tracking"
+                alt="Miss-Minutes Tracking"
                 fill
                 className="object-cover drop-shadow-2xl hover:scale-105 transition-transform duration-500 object-left"
                 priority

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CodeChrono - Track Your Coding Time",
+  title: "Miss-Minutes - Track Your Coding Time",
   description: "Professional coding time tracker with analytics and insights",
 };
 

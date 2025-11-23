@@ -31,7 +31,7 @@ export function FloatingNavbar() {
         <Link href="/" className="flex items-center gap-2 font-bold text-xl">
           <Image
             src="/logo.png"
-            alt="CodeChrono"
+            alt="Miss-Minutes"
             width={40}
             height={40}
             className="object-contain"
@@ -39,7 +39,7 @@ export function FloatingNavbar() {
           <span
             className={cn(isScrolled ? "text-destructive" : "text-destructive")}
           >
-            CodeChrono
+            Miss-Minutes
           </span>
         </Link>
 

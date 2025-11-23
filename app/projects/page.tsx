@@ -103,7 +103,7 @@ export default async function ProjectsPage() {
           </div>
           <h3 className="text-xl font-semibold mb-2">No Projects Yet</h3>
           <p className="text-center max-w-md mb-6 text-muted-foreground">
-            Start coding in VS Code with the CodeChrono extension to see your
+            Start coding in VS Code with the Miss-Minutes extension to see your
             projects here.
           </p>
           <Link

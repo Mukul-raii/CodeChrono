@@ -3,7 +3,7 @@ import { Terminal, UserPlus, BarChart } from "lucide-react";
 const steps = [
   {
     title: "Install Extension",
-    description: "Get the CodeChrono extension from the VS Code Marketplace.",
+    description: "Get the Miss-Minutes extension from the VS Code Marketplace.",
     icon: Terminal,
   },
   {

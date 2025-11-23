@@ -37,12 +37,35 @@ export function DashboardContent() {
     0
   );
 
+  // Prepare chart data
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }).reverse();
+
+  const chartData = last7Days.map((date) => {
+    const activity = stats?.dailyActivity?.find((a) => {
+      const aDate = new Date(a.date);
+      aDate.setHours(0, 0, 0, 0);
+      return aDate.getTime() === date.getTime();
+    });
+    return {
+      date: date,
+      duration: activity ? activity.duration : 0,
+      label: date.toLocaleDateString("en-US", { weekday: "short" }),
+    };
+  });
+
+  const maxDuration = Math.max(...chartData.map((d) => d.duration), 1);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-500">Loading dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -52,10 +75,10 @@ export function DashboardContent() {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <p className="text-red-500 mb-4">Failed to load dashboard</p>
+          <p className="text-destructive mb-4">Failed to load dashboard</p>
           <button
             onClick={() => refetch()}
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            className="px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
           >
             Retry
           </button>
@@ -67,7 +90,7 @@ export function DashboardContent() {
   if (!stats) {
     return (
       <div className="flex items-center justify-center h-96">
-        <p className="text-gray-500">No data available</p>
+        <p className="text-muted-foreground">No data available</p>
       </div>
     );
   }
@@ -86,12 +109,7 @@ export function DashboardContent() {
             Overview of your coding activity for the last 7 days
           </p>
         </div>
-        <Link
-          href="/analytics"
-          className="px-4 py-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90"
-        >
-          View Analytics
-        </Link>
+        {/* Removed View Analytics button as requested */}
       </div>
 
       {/* Stats Grid */}
@@ -140,6 +158,37 @@ export function DashboardContent() {
           </div>
           <h3 className="text-3xl font-bold mb-2">{topLanguage}</h3>
           <p className="text-sm text-muted-foreground">Top Language</p>
+        </div>
+      </div>
+
+      {/* Activity Chart */}
+      <div className="rounded-lg border bg-card p-6">
+        <h3 className="text-lg font-bold mb-6">Activity (Last 7 Days)</h3>
+        <div className="flex items-end justify-between h-64 gap-2">
+          {chartData.map((item, index) => (
+            <div
+              key={index}
+              className="flex flex-col items-center gap-2 flex-1 group"
+            >
+              <div className="relative w-full flex justify-center h-full items-end">
+                {/* Tooltip */}
+                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-popover text-popover-foreground text-xs rounded px-2 py-1 whitespace-nowrap shadow-md z-10 border border-border">
+                  {formatDuration(item.duration)}
+                </div>
+                {/* Bar */}
+                <div
+                  className="w-full max-w-[60px] bg-primary/80 hover:bg-primary rounded-t-md transition-all duration-500 ease-out"
+                  style={{
+                    height: `${(item.duration / maxDuration) * 100}%`,
+                    minHeight: item.duration > 0 ? "4px" : "0",
+                  }}
+                ></div>
+              </div>
+              <span className="text-xs text-muted-foreground font-medium">
+                {item.label}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
 

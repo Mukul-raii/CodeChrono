@@ -206,7 +206,7 @@ const BigIntScalar = new GraphQLScalarType({
 const resolvers = {
   BigInt: BigIntScalar,
   Query: {
-    hello: () => "Hello from CodeChrono API",
+    hello: () => "Hello from Miss-Minutes API",
 
     dashboardStats: async () => {
       const session = await getServerSession(authOptions);
