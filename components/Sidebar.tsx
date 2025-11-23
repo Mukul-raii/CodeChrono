@@ -71,12 +71,16 @@ const SidebarWrapper = ({
 
   return (
     <SidebarProvider>
-      <Sidebar variant="sidebar" collapsible="none" className="h-svh bg-muted">
+      <Sidebar
+        variant="sidebar"
+        collapsible="none"
+        className="h-svh bg-sidebar border-r"
+      >
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel className="p-4 mb-8 h-auto">
-              <a className="flex items-center gap-3" href="/dashboard">
-                <div className="relative w-8 h-8">
+            <SidebarGroupLabel className="px-4 pt-6 pb-4 h-auto">
+              <a className="flex items-center gap-2.5" href="/dashboard">
+                <div className="relative w-9 h-9 shrink-0">
                   <Image
                     src="/logo.png"
                     alt="Miss-Minutes"
@@ -84,22 +88,23 @@ const SidebarWrapper = ({
                     className="object-contain"
                   />
                 </div>
-                <span className="text-xl font-bold text-foreground">
+                <span className="text-lg font-bold text-foreground tracking-tight">
                   Miss-Minutes
                 </span>
               </a>
             </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
+            <SidebarGroupContent className="px-3 pt-4">
+              <SidebarMenu className="gap-1">
                 {items.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
                       tooltip={item.title}
                       isActive={pathname === item.url}
+                      className="h-11 px-3 text-base font-medium"
                     >
-                      <a className="text-xl" href={item.url}>
-                        <item.icon className="h-6 w-6" />
+                      <a href={item.url}>
+                        <item.icon className="h-5 w-5" />
                         <span>{item.title}</span>
                       </a>
                     </SidebarMenuButton>
@@ -110,15 +115,17 @@ const SidebarWrapper = ({
           </SidebarGroup>
         </SidebarContent>
 
-        <SidebarFooter>
+        <SidebarFooter className="p-3 border-t">
           <SidebarGroup>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               <SidebarMenuItem>
-                <SidebarMenuButton className="w-full justify-between gap-3 h-auto py-3">
-                  <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <User className="h-6 w-6 shrink-0" />
+                <SidebarMenuButton className="h-auto py-2.5 px-3 hover:bg-accent/50">
+                  <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <User className="h-4 w-4 text-primary" />
+                    </div>
                     <div className="flex flex-col items-start min-w-0 flex-1">
-                      <span className="text-xl font-medium truncate w-full">
+                      <span className="text-sm font-semibold truncate w-full">
                         {userName || "User"}
                       </span>
                       <span className="text-xs text-muted-foreground truncate w-full">
@@ -131,7 +138,7 @@ const SidebarWrapper = ({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={handleSignOut}
-                  className="w-full text-xl justify-start gap-2 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  className="h-10 px-3 text-sm font-medium justify-start gap-2.5 text-destructive hover:text-destructive hover:bg-destructive/10"
                 >
                   <LogOut className="h-4 w-4" />
                   <span>Sign Out</span>
@@ -143,10 +150,10 @@ const SidebarWrapper = ({
       </Sidebar>
 
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center justify-end border-b  gap-4 px-6">
+        <header className="sticky top-0 z-10 flex h-14 shrink-0 items-center justify-end border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 gap-4 px-6">
           <ThemeToggle />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8 pt-0">
+        <div className="flex flex-1 flex-col gap-4 p-4 md:p-6 lg:p-8 pt-6">
           {children}
         </div>
       </SidebarInset>
