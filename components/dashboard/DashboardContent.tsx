@@ -10,7 +10,14 @@ import { useDashboardStore } from "@/lib/stores";
 import { formatDuration } from "@/lib/utils/index";
 import { useEffect } from "react";
 import Link from "next/link";
-import { FolderKanban, ArrowUpRight, Clock, Activity } from "lucide-react";
+import {
+  FolderKanban,
+  ArrowUpRight,
+  Clock,
+  Activity,
+  Settings,
+  Download,
+} from "lucide-react";
 
 export function DashboardContent() {
   const { data: stats, isLoading, error, refetch } = useDashboardStats();
@@ -151,6 +158,9 @@ export function DashboardContent() {
   const activeProjects = stats.activeProjects;
   const topLanguage = stats.languages[0]?.language || "N/A";
 
+  // Check if user has no projects (new user)
+  const hasNoProjects = totalProjects === 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -163,6 +173,45 @@ export function DashboardContent() {
         </div>
         {/* Removed View Analytics button as requested */}
       </div>
+
+      {/* No Projects Notice */}
+      {hasNoProjects && (
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-6">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div className="shrink-0 w-12 h-12 rounded-lg flex items-center justify-center bg-primary/10">
+              <Settings className="w-6 h-6 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold mb-1">
+                Get Started with Miss-Minutes
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3">
+                No projects detected yet. Install the VS Code extension and
+                configure your API key to start tracking your coding activity
+                automatically.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <Link
+                  href="/settings"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-lg hover:bg-primary/90 transition-all"
+                >
+                  <Settings className="w-4 h-4" />
+                  Get API Key
+                </Link>
+                <a
+                  href="https://marketplace.visualstudio.com/items?itemName=Mukulrai.miss-minutes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-foreground bg-card border border-border rounded-lg hover:bg-muted/50 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  Install Extension
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
