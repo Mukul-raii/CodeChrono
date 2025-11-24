@@ -43,7 +43,8 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/api/auth/signin"
+                  /*href="/api/auth/signin" */
+                  href=""
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Login

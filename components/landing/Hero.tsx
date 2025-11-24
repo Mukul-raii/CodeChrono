@@ -40,10 +40,11 @@ export function Hero() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link
-                href="/api/auth/signin"
+                /*href="/api/auth/signin" */
+                href=""
                 className="px-8 py-4 text-lg font-semibold text-primary-foreground bg-primary rounded-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2"
               >
-                Get Started <ArrowRight className="w-5 h-5" />
+                Coming Soon <ArrowRight className="w-5 h-5" />
               </Link>
               <Link
                 href="#how-it-works"

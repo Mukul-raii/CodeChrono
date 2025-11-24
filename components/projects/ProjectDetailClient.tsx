@@ -110,13 +110,7 @@ export function ProjectDetailClient({
   return (
     <>
       {/* Commits Section with Pagination */}
-      <div
-        className="p-6 rounded-xl border shadow-sm"
-        style={{
-          background: "hsl(var(--card))",
-          borderColor: "hsl(var(--border))",
-        }}
-      >
+      <div className="p-6 rounded-xl border-border bg-card shadow-sm">
         <div className="flex items-center justify-between mb-6">
           <h2
             className="text-lg font-semibold"

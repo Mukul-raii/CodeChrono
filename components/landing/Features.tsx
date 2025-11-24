@@ -5,121 +5,144 @@ import {
   BarChart3,
   Shield,
   Zap,
+  Clock,
+  TrendingUp,
 } from "lucide-react";
 
 const features = [
   {
     title: "Project Breakdown",
     description:
-      "See where your time actually goes. Which repo ate your week? Which feature took longer than expected?",
+      "See where your time actually goes. Track which repos and features consume your coding hours.",
     icon: LayoutDashboard,
+    gradient: "from-blue-500 to-cyan-500",
   },
   {
-    title: "Language Usage",
+    title: "Language Insights",
     description:
-      "Track how much time you spend in JS, TS, Python, Rust, Go, etc.",
+      "Monitor time spent in JavaScript, TypeScript, Python, and more with detailed breakdowns.",
     icon: Code2,
+    gradient: "from-gray-500 to-pink-500",
   },
   {
     title: "Commit Timeline",
     description:
-      "Understand how your effort translates into commits, changes, and progress.",
+      "Visualize how your effort translates into commits and track your development progress.",
     icon: GitCommit,
+    gradient: "from-orange-500 to-red-500",
   },
   {
-    title: "Daily & Weekly Trends",
+    title: "Smart Analytics",
     description:
-      "Visualize your peaks, dips, and focused blocks. All automatically logged.",
+      "Discover your productivity patterns with daily and weekly trends, automatically logged.",
     icon: BarChart3,
+    gradient: "from-green-500 to-emerald-500",
+  },
+];
+
+const highlights = [
+  {
+    icon: Zap,
+    title: "Lightweight",
+    description: "Minimal resource usage",
+    color: "text-yellow-600 bg-yellow-50",
+  },
+  {
+    icon: Shield,
+    title: "Privacy First",
+    description: "Data stays in your control",
+    color: "text-blue-600 bg-blue-50",
+  },
+  {
+    icon: Clock,
+    title: "Real-Time",
+    description: "Live tracking as you code",
+    color: "text-purple-600 bg-purple-50",
+  },
+  {
+    icon: TrendingUp,
+    title: "Growth Focused",
+    description: "Improve with insights",
+    color: "text-green-600 bg-green-50",
   },
 ];
 
 export function Features() {
   return (
-    <section id="features" className="py-24 bg-card/50">
-      <div className="container px-4 mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
+    <section id="features" className="py-32 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 -z-10 opacity-40">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-20">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary mb-6">
+            <BarChart3 className="w-4 h-4" />
+            <span className="text-sm font-medium">Powerful Features</span>
+          </div>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
             Stop Guessing Where Your Time Goes
           </h2>
-          <p className="text-lg text-muted-foreground">
-            Whether you’re building side-projects, freelancing, or shipping
-            production code — understanding your workflow matters.
+          <p className="text-xl text-muted-foreground">
+            Whether you&apos;re building side-projects, freelancing, or shipping
+            production code — understanding your workflow helps you grow.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {/* Main Features Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="p-6 bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-shadow"
+              className="group relative bg-card rounded-2xl border border-border p-8 hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
             >
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 text-primary">
-                <feature.icon className="w-6 h-6" />
+              {/* Icon with gradient background */}
+              <div
+                className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform`}
+              >
+                <feature.icon className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2 text-foreground">
+
+              <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
                 {feature.title}
               </h3>
-              <p className="text-muted-foreground">{feature.description}</p>
+              <p className="text-muted-foreground leading-relaxed">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>
 
-        <div className="mt-24 grid md:grid-cols-2 gap-12 items-center">
-          <div className="order-2 md:order-1">
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-xl opacity-50"></div>
-              <div className="relative bg-card border border-border rounded-2xl p-8 shadow-xl">
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                      <Zap className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold">Lightweight Extension</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Runs silently in background
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                      <Shield className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold">Private By Design</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Your data stays in your workspace
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="order-1 md:order-2">
-            <h3 className="text-3xl font-bold mb-4 text-foreground">
-              Powered by a Lightweight VS Code Extension
+        {/* Highlights Section */}
+        <div className="bg-gradient-to-br from-card to-card/50 rounded-3xl border border-border p-12">
+          <div className="text-center mb-12">
+            <h3 className="text-3xl font-bold mb-3 text-foreground">
+              Built for Developers
             </h3>
-            <p className="text-lg text-muted-foreground mb-6">
-              Miss-Minutes runs silently in the background:
+            <p className="text-lg text-muted-foreground">
+              A VS Code extension designed with your workflow in mind
             </p>
-            <ul className="space-y-3">
-              {[
-                "Tracks coding duration",
-                "Detects active project",
-                "Captures file events",
-                "Sends logs securely",
-              ].map((item, i) => (
-                <li
-                  key={i}
-                  className="flex items-center gap-3 text-foreground/80"
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {highlights.map((highlight, index) => (
+              <div key={index} className="text-center">
+                <div
+                  className={`w-16 h-16 mx-auto rounded-2xl ${highlight.color} flex items-center justify-center mb-4`}
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                  {item}
-                </li>
-              ))}
-            </ul>
+                  <highlight.icon className="w-8 h-8" />
+                </div>
+                <h4 className="font-bold text-foreground mb-2">
+                  {highlight.title}
+                </h4>
+                <p className="text-sm text-muted-foreground">
+                  {highlight.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

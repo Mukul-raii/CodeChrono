@@ -3,6 +3,9 @@ import { Hero } from "@/components/landing/Hero";
 import { DashboardShowcase } from "@/components/landing/DashboardShowcase";
 import { Features } from "@/components/landing/Features";
 import { HowItWorks } from "@/components/landing/HowItWorks";
+import { ThemeShowcase } from "@/components/landing/ThemeShowcase";
+import { FAQ } from "@/components/landing/FAQ";
+import { SupportUs } from "@/components/landing/SupportUs";
 import { Footer } from "@/components/landing/Footer";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
@@ -22,9 +25,12 @@ export default async function Home() {
         <Hero />
         <DashboardShowcase />
         <Features />
+        <ThemeShowcase />
         <HowItWorks />
+        <FAQ />
       </main>
       <Footer />
+      <SupportUs />
     </div>
   );
 }
